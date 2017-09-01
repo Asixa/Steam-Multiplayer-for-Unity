@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading;
 using UnityEngine;
 using Steamworks;
+using System.Text;
 public class SteamNetwork : MonoBehaviour {
 
 	// Use this for initialization
@@ -18,11 +19,14 @@ public class SteamNetwork : MonoBehaviour {
     void Update()
     {
         SteamAPI.RunCallbacks();
+
     }
 
-    CallResult<LobbyMatchList_t> CLobbyListManager=new CallResult<LobbyMatchList_t>();
-    CallResult<LobbyCreated_t> CLobbyCreator = new CallResult<LobbyCreated_t>();
-    CallResult<LobbyEnter_t> CLobbyJoin = new CallResult<LobbyEnter_t>();
+
+
+
+    #region FindLobby
+    CallResult<LobbyMatchList_t> CLobbyListManager = new CallResult<LobbyMatchList_t>();
     void FindLobbies()
     {
         var a = SteamMatchmaking.RequestLobbyList();
@@ -33,40 +37,69 @@ public class SteamNetwork : MonoBehaviour {
     {
         print("找到服务器："+pCallback.m_nLobbiesMatching);
     }
+    #endregion
 
+    #region CreateLobby
+    CallResult<LobbyCreated_t> CLobbyCreator = new CallResult<LobbyCreated_t>();
     void CreateLobbies()
     {
-        ELobbyType lobby_type=ELobbyType.k_ELobbyTypePublic;
-        
-        var a = SteamMatchmaking.CreateLobby(lobby_type,8);
+        ELobbyType lobby_type = ELobbyType.k_ELobbyTypePublic;
+
+        var a = SteamMatchmaking.CreateLobby(lobby_type, 8);
         CLobbyCreator.Set(a, OnLobbyCreated);
     }
 
-    private ulong LobbyID;
+    private CSteamID lobby;
+
     void OnLobbyCreated(LobbyCreated_t pCallbacks, bool bIOFailure)
     {
         print("创建服务器：" + pCallbacks.m_eResult);
-        print("服务器ID"+pCallbacks.m_ulSteamIDLobby);
-        LobbyID = pCallbacks.m_ulSteamIDLobby;
+        print("服务器ID" + pCallbacks.m_ulSteamIDLobby);
+        lobby = new CSteamID(pCallbacks.m_ulSteamIDLobby);
         JoinLobby();
     }
+    #endregion
 
+    #region JoinLobby
+    CallResult<LobbyEnter_t> CLobbyJoin = new CallResult<LobbyEnter_t>();
     void JoinLobby()
     {
-        CSteamID id=new CSteamID(LobbyID);
-        var a = SteamMatchmaking.JoinLobby(id);
-        CLobbyJoin.Set(a,OnLobbyJoined);
+        var a = SteamMatchmaking.JoinLobby(lobby);
+        print(a.m_SteamAPICall+" ************");
+        CLobbyJoin.Set(a, OnLobbyJoined);
     }
     void OnLobbyJoined(LobbyEnter_t pCallbacks, bool bIOFailure)
     {
         if (!bIOFailure)
         {
-            print("--" );
+            print("--");
         }
         print("加入服务器：" + bIOFailure);
         print("服务器上锁" + pCallbacks);
-        print(SteamMatchmaking.GetNumLobbyMembers(new CSteamID(LobbyID)));
+        print(SteamMatchmaking.GetNumLobbyMembers(lobby));
+        ChatInit();
+        sendMsg("HelloWorld");
+    }
 
+
+    #endregion
+
+    void sendMsg(string t)
+    {
+        SteamMatchmaking.SendLobbyChatMsg(lobby, Encoding.Default.GetBytes(t), t.Length + 1);
+    }
+
+    CallResult<LobbyChatMsg_t> CLobbyChat = new CallResult<LobbyChatMsg_t>();
+    void ChatInit()
+    {
+     CLobbyChat.Set(new SteamAPICall_t(LobbyChatMsg_t.k_iCallback),OnLobbyChatRecieved);
+        print("Chat system Done "+LobbyChatMsg_t.k_iCallback);
+    }
+
+    void OnLobbyChatRecieved(LobbyChatMsg_t pCallbacks, bool bIOFailure)
+    {
+
+        print("Chat:"+pCallbacks.m_eChatEntryType.ToString());
     }
 
 }
