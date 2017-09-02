@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using Steamworks;
 using System.Text;
+using System.Runtime.Serialization.Formatters.Binary;
+using System.IO;
 
 public class NetWorkingCore : MonoBehaviour {
 
@@ -13,14 +15,15 @@ public class NetWorkingCore : MonoBehaviour {
     static Callback<P2PSessionRequest_t> m_P2PSessionRequest = Callback<P2PSessionRequest_t>.Create(OnP2PSessionRequest);
     static List<CSteamID> players = new List<CSteamID>();
 
-    public static void Init()
+    public void testing()
     {
-
+        SendPackets("hellow!!");
     }
 
     // Use this for initialization
     void Start ()
     {
+        InvokeRepeating("testing", 0, 0.005f);
     }
 	
 	// Update is called once per frame
@@ -32,11 +35,6 @@ public class NetWorkingCore : MonoBehaviour {
             ReadPackets(length);
         }
 	}
-
-    public void testing()
-    {
-        SendPackets(Encoding.Default.GetBytes("hellow!"));
-    }
 
     public static void CreateConnection(CSteamID player)
     {
@@ -51,24 +49,54 @@ public class NetWorkingCore : MonoBehaviour {
         }
     }
 
+    #region SendPacket
+    /// <summary>
+    /// Send the package to someone.
+    /// </summary>
+    public static void SendPackets(CSteamID target,object data)
+    {
+        MemoryStream ms = new MemoryStream();
+        new BinaryFormatter().Serialize(ms, data);
+        SendPackets(target, ms.GetBuffer());
+    }
+    /// <summary>
+    /// Send the package to someone.
+    /// </summary>
     public static void SendPackets(CSteamID target,byte[] data)
     {
         SteamNetworking.SendP2PPacket(target, data, (uint)data.Length, EP2PSend.k_EP2PSendReliable);
     }
+    /// <summary>
+    /// Send the package to everyone except the server.
+    /// </summary>
+    public static void SendPackets(object data)
+    {
+        MemoryStream ms = new MemoryStream();
+        new BinaryFormatter().Serialize(ms, data);
+        SendPackets(ms.GetBuffer());
+    }
+    /// <summary>
+    /// Send the package to everyone except the server.
+    /// </summary>
     public static void SendPackets(byte[] data)
     {
         foreach (CSteamID item in players)
         {
-            SteamNetworking.SendP2PPacket(item, data, (uint)data.Length, EP2PSend.k_EP2PSendReliable);
+            SendPackets(item, data);
         }
     }
-    public static void ReadPackets(uint length)
+    #endregion
+
+    public static object ReadPackets(uint length)
     {
         CSteamID sender;
         uint data_length;
         byte[] data = new byte[length];
         SteamNetworking.ReadP2PPacket(data, length, out data_length, out sender);
-        print("收到包："+Encoding.UTF8.GetString(data));
+        MemoryStream ms = new MemoryStream(data);
+        object o = new BinaryFormatter().Deserialize(ms);
+        //print("收到包：" + o + " 发送者：" + sender.m_SteamID);
+        return o;
     }
 
     static void OnSocketStatusCallback(SocketStatusCallback_t pCallback)
