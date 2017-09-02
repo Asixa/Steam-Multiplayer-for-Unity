@@ -107,20 +107,30 @@ public class SteamNetwork : MonoBehaviour {
     void sendMsg(string t)
     {
         SteamMatchmaking.SendLobbyChatMsg(lobby, Encoding.Default.GetBytes(t), t.Length + 1);
-        chat_text.text = chat_text.text + t + "\n";
     }
-
-    CallResult<LobbyChatMsg_t> CLobbyChat = new CallResult<LobbyChatMsg_t>();
+    protected Callback<LobbyChatUpdate_t> m_LobbyChatUpdate;
+    protected Callback<LobbyChatMsg_t> m_LobbyChatMsg;
     void ChatInit()
     {
-        CLobbyChat.Set(new SteamAPICall_t(LobbyChatMsg_t.k_iCallback),OnLobbyChatRecieved);
-        print("Chat system Done "+LobbyChatMsg_t.k_iCallback);
+        m_LobbyChatUpdate = Callback<LobbyChatUpdate_t>.Create(OnLobbyChatUpdate);
+        m_LobbyChatMsg = Callback<LobbyChatMsg_t>.Create(OnLobbyChatMsg);
+        print("Chat system Done " + LobbyChatMsg_t.k_iCallback);
     }
 
-    void OnLobbyChatRecieved(LobbyChatMsg_t pCallbacks, bool bIOFailure)
+    void OnLobbyChatUpdate(LobbyChatUpdate_t pCallback)
     {
-        print(2);
-        chat_text.text = chat_text.text + pCallbacks.ToString() + "\n";
-        print("Chat:"+pCallbacks.m_eChatEntryType.ToString());
+        Debug.Log("[" + LobbyChatUpdate_t.k_iCallback + " - LobbyChatUpdate] - " + pCallback.m_ulSteamIDLobby + " -- " + pCallback.m_ulSteamIDUserChanged + " -- " + pCallback.m_ulSteamIDMakingChange + " -- " + pCallback.m_rgfChatMemberStateChange);
+    }
+
+    void OnLobbyChatMsg(LobbyChatMsg_t pCallback)
+    {
+        Debug.Log("[" + LobbyChatMsg_t.k_iCallback + " - LobbyChatMsg] - " + pCallback.m_ulSteamIDLobby + " -- " + pCallback.m_ulSteamIDUser + " -- " + pCallback.m_eChatEntryType + " -- " + pCallback.m_iChatID);
+        CSteamID SteamIDUser;
+        byte[] Data = new byte[4096];
+        EChatEntryType ChatEntryType;
+        int ret = SteamMatchmaking.GetLobbyChatEntry((CSteamID)pCallback.m_ulSteamIDLobby, (int)pCallback.m_iChatID, out SteamIDUser, Data, Data.Length, out ChatEntryType);
+        Debug.Log("GetLobbyChatEntry(" + (CSteamID)pCallback.m_ulSteamIDLobby + ", " + (int)pCallback.m_iChatID + ", out SteamIDUser, Data, Data.Length, out ChatEntryType) : " + ret + " -- " + SteamIDUser + " -- " + System.Text.Encoding.UTF8.GetString(Data) + " -- " + ChatEntryType);
+
+        chat_text.text += System.Text.Encoding.UTF8.GetString(Data) + "\n";
     }
 }
