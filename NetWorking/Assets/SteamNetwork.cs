@@ -13,6 +13,8 @@ public class SteamNetwork : MonoBehaviour {
     public InputField enter_input;
     public Text chat_text;
 
+    public string chatstring = null;
+
     // Use this for initialization
     void Start ()
 	{
@@ -26,7 +28,6 @@ public class SteamNetwork : MonoBehaviour {
     void Update()
     {
         SteamAPI.RunCallbacks();
-
     }
 
     public void JoinSever()
@@ -96,6 +97,8 @@ public class SteamNetwork : MonoBehaviour {
         print("服务器ID" + pCallbacks.m_ulSteamIDLobby);
         print("服务器上锁：" + pCallbacks.m_bLocked);
         SeverID.text = pCallbacks.m_ulSteamIDLobby.ToString();
+        //建立连接
+        NetWorkingCore.CreateConnections(lobby);
         print(SteamMatchmaking.GetNumLobbyMembers(lobby));
         ChatInit();
         sendMsg("HelloWorld");
@@ -130,7 +133,10 @@ public class SteamNetwork : MonoBehaviour {
         EChatEntryType ChatEntryType;
         int ret = SteamMatchmaking.GetLobbyChatEntry((CSteamID)pCallback.m_ulSteamIDLobby, (int)pCallback.m_iChatID, out SteamIDUser, Data, Data.Length, out ChatEntryType);
         Debug.Log("GetLobbyChatEntry(" + (CSteamID)pCallback.m_ulSteamIDLobby + ", " + (int)pCallback.m_iChatID + ", out SteamIDUser, Data, Data.Length, out ChatEntryType) : " + ret + " -- " + SteamIDUser + " -- " + System.Text.Encoding.UTF8.GetString(Data) + " -- " + ChatEntryType);
-
-        chat_text.text += System.Text.Encoding.UTF8.GetString(Data) + "\n";
+        print(Encoding.UTF8.GetString(Data));
+        print(chat_text.text);
+        chatstring = Encoding.UTF8.GetString(Data);
+        chat_text.text = chat_text.text + chatstring + "\n";
+        print(chat_text.text);
     }
 }
