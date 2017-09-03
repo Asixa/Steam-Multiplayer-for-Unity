@@ -50,6 +50,7 @@
      <Compile Include="Assets\SteamMultiplayer\Scripts\Attribute\FoldoutGroupAttribute.cs" />
      <Compile Include="Assets\SteamMultiplayer\Scripts\NetWorkingCore.cs" />
      <Compile Include="Assets\SteamMultiplayer\Scripts\NetworkLobbyManager.cs" />
+     <Compile Include="Assets\SteamMultiplayer\Scripts\SteamNetworkBehaviour.cs" />
      <Compile Include="Assets\SteamMultiplayer\Scripts\UI\Lobby\LobbyList.cs" />
      <Compile Include="Assets\SteamMultiplayer\Scripts\UI\Lobby\LobbyPanel.cs" />
      <Compile Include="Assets\SteamMultiplayer\Scripts\UI\Lobby\SingleLobbyButton.cs" />

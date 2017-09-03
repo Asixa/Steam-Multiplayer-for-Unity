@@ -9,6 +9,25 @@ using UnityEngine.Events;
 using UnityEngine.UI;
 
 public class NetworkLobbyManager : MonoBehaviour {
+    [Serializable]
+    public struct NetworkOpinion_s
+    {
+        public int Port;
+        public int TimeoutSec;
+    }
+    [Layout]
+    public NetworkOpinion_s NetworkOpinion=new NetworkOpinion_s
+    {
+        Port = 233,TimeoutSec = 300
+    };
+
+    [Serializable]
+    public struct SpawnInfo_s
+    {
+        public List<GameObject> SpawnablePrefab;
+    }
+
+    [Layout] public SpawnInfo_s SpawnInfo;
 
 
     private CSteamID lobby;
@@ -69,7 +88,6 @@ public class NetworkLobbyManager : MonoBehaviour {
         SteamMatchmaking.SendLobbyChatMsg(lobby, Encoding.Default.GetBytes(content), content.Length + 1);
     }
 
-
     //*************初始化*************
 
     void ChatInit()
@@ -117,12 +135,12 @@ public class NetworkLobbyManager : MonoBehaviour {
 
     //************委托************
 
-    public delegate void LobbyJoined();
-    public LobbyJoined lobby_joined;
-    public delegate void LobbyCreated();
-    public LobbyCreated lobby_created;
+    public delegate void LobbyEvent();
+    public LobbyEvent lobby_joined;
+    public LobbyEvent lobby_created;
+    public LobbyEvent lobby_leaved;
+
     public delegate void LobbyChatMsgRecevied(string t);
     public LobbyChatMsgRecevied lobby_chat_msg_recevied;
-    public delegate void LobbyLeaved();
-    public LobbyLeaved lobby_leaved;
+
 }

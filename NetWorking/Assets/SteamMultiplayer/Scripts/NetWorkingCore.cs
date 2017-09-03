@@ -8,25 +8,20 @@ using System.IO;
 
 public class NetWorkingCore : MonoBehaviour {
 
-    public static int VirtualPort = 233;
-    public static int TimeoutSec = 300;
-
     static Callback<SocketStatusCallback_t> m_SocketStatusCallback = Callback<SocketStatusCallback_t>.Create(OnSocketStatusCallback);
     static Callback<P2PSessionRequest_t> m_P2PSessionRequest = Callback<P2PSessionRequest_t>.Create(OnP2PSessionRequest);
-    static List<CSteamID> players = new List<CSteamID>();
+    static List<CSteamID> PlayerList = new List<CSteamID>();
 
     public void testing()
     {
         SendPackets("hellow!!");
     }
 
-    // Use this for initialization
     void Start ()
     {
         InvokeRepeating("testing", 0, 0.005f);
     }
 	
-	// Update is called once per frame
 	void Update ()
     {
         uint length;
@@ -38,14 +33,18 @@ public class NetWorkingCore : MonoBehaviour {
 
     public static void CreateConnection(CSteamID player)
     {
-        SteamNetworking.CreateP2PConnectionSocket(player, VirtualPort, TimeoutSec, true);
+        SteamNetworking.CreateP2PConnectionSocket(player,
+            NetworkLobbyManager.instance.NetworkOpinion.Port,
+            NetworkLobbyManager.instance.NetworkOpinion.TimeoutSec,
+            true);
     }
+
     public static void CreateConnections(CSteamID lobby)
     {
         for (int i = 0; i < SteamMatchmaking.GetNumLobbyMembers(lobby); i++)
         {
-            players.Add(SteamMatchmaking.GetLobbyMemberByIndex(lobby, i));
-            CreateConnection(players[players.Count - 1]);
+            PlayerList.Add(SteamMatchmaking.GetLobbyMemberByIndex(lobby, i));
+            CreateConnection(PlayerList[PlayerList.Count - 1]);
         }
     }
 
@@ -72,7 +71,7 @@ public class NetWorkingCore : MonoBehaviour {
     /// Send the package to everyone except the server.
     public static void SendPackets(byte[] data)
     {
-        foreach (var item in players)
+        foreach (var item in PlayerList)
         {
             SendPackets(item, data);
         }
@@ -83,9 +82,9 @@ public class NetWorkingCore : MonoBehaviour {
     {
         CSteamID sender;
         uint data_length;
-        byte[] data = new byte[length];
+        var data = new byte[length];
         SteamNetworking.ReadP2PPacket(data, length, out data_length, out sender);
-        MemoryStream ms = new MemoryStream(data);
+        var ms = new MemoryStream(data);
         object o = new BinaryFormatter().Deserialize(ms);
         //print("收到包：" + o + " 发送者：" + sender.m_SteamID);
         return o;
@@ -99,6 +98,6 @@ public class NetWorkingCore : MonoBehaviour {
     private static void OnP2PSessionRequest(P2PSessionRequest_t pCallback)
     {
         SteamNetworking.AcceptP2PSessionWithUser(pCallback.m_steamIDRemote);
-        players.Add(pCallback.m_steamIDRemote);
+        PlayerList.Add(pCallback.m_steamIDRemote);
     }
 }
