@@ -39,7 +39,7 @@ public class LayoutDrawer : PropertyDrawer
         position.height = EditorGUIUtility.singleLineHeight;
         property.isExpanded = Header(position, property.displayName, property.isExpanded);
         position.y += kHeadingSpace;
-
+        
         if (!property.isExpanded)
             return;
 

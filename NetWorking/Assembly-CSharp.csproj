@@ -48,9 +48,11 @@
   <ItemGroup>
      <Compile Include="Assets\Scripts\Steamworks.NET\SteamManager.cs" />
      <Compile Include="Assets\SteamMultiplayer\Scripts\Attribute\FoldoutGroupAttribute.cs" />
-     <Compile Include="Assets\SteamMultiplayer\Scripts\NetWorkingCore.cs" />
+     <Compile Include="Assets\SteamMultiplayer\Scripts\Core\M_Identity.cs" />
+     <Compile Include="Assets\SteamMultiplayer\Scripts\Core\SteamNetworkBehaviour.cs" />
      <Compile Include="Assets\SteamMultiplayer\Scripts\NetworkLobbyManager.cs" />
-     <Compile Include="Assets\SteamMultiplayer\Scripts\SteamNetworkBehaviour.cs" />
+     <Compile Include="Assets\SteamMultiplayer\Scripts\SMC.cs" />
+     <Compile Include="Assets\SteamMultiplayer\Scripts\SpawnableObjects.cs" />
      <Compile Include="Assets\SteamMultiplayer\Scripts\UI\Lobby\LobbyList.cs" />
      <Compile Include="Assets\SteamMultiplayer\Scripts\UI\Lobby\LobbyPanel.cs" />
      <Compile Include="Assets\SteamMultiplayer\Scripts\UI\Lobby\SingleLobbyButton.cs" />

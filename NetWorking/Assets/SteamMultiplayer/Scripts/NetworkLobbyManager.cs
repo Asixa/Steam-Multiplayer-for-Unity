@@ -7,7 +7,7 @@ using Steamworks;
 using System.Text;
 using UnityEngine.Events;
 using UnityEngine.UI;
-
+[RequireComponent(typeof(SMC))]
 public class NetworkLobbyManager : MonoBehaviour {
     [Serializable]
     public struct NetworkOpinion_s
@@ -24,7 +24,7 @@ public class NetworkLobbyManager : MonoBehaviour {
     [Serializable]
     public struct SpawnInfo_s
     {
-        public List<GameObject> SpawnablePrefab;
+        public SpawnableObjects Spawnable_objects;
     }
 
     [Layout] public SpawnInfo_s SpawnInfo;
@@ -127,7 +127,7 @@ public class NetworkLobbyManager : MonoBehaviour {
 
     void OnLobbyJoined(LobbyEnter_t pCallbacks, bool bIOFailure)
     {
-        NetWorkingCore.CreateConnections(lobby);
+        SMC.CreateConnections(lobby);
         if (lobby_joined != null) lobby_joined.Invoke();
         SendChatMessage(SteamFriends.GetPersonaName()+" Joined the Lobby",false);
         //加入完成
