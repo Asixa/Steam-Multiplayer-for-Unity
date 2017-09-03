@@ -73,7 +73,7 @@ public class SMC : MonoBehaviour
     }
     #endregion
 
-    public static object ReadPackets(uint length)
+    public static P2PPackage ReadPackets(uint length)
     {
         CSteamID sender;
         uint data_length;
