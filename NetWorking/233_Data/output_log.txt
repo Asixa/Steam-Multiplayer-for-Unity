@@ -1,0 +1,71 @@
+Initialize engine version: 5.6.0f3 (497a0f351392)
+GfxDevice: creating device client; threaded=1
+Direct3D:
+    Version:  Direct3D 11.0 [level 11.0]
+    Renderer: NVIDIA GeForce GTX 960M (ID=0x139b)
+    Vendor:   NVIDIA
+    VRAM:     3072 MB
+    Driver:   21.21.13.7654
+Begin MonoManager ReloadAssembly
+Platform assembly: E:\Programing\Github\ProjectNB\NetWorking\233_Data\Managed\UnityEngine.dll (this message is harmless)
+Loading E:\Programing\Github\ProjectNB\NetWorking\233_Data\Managed\UnityEngine.dll into Unity Child Domain
+Platform assembly: E:\Programing\Github\ProjectNB\NetWorking\233_Data\Managed\Assembly-CSharp-firstpass.dll (this message is harmless)
+Loading E:\Programing\Github\ProjectNB\NetWorking\233_Data\Managed\Assembly-CSharp-firstpass.dll into Unity Child Domain
+Platform assembly: E:\Programing\Github\ProjectNB\NetWorking\233_Data\Managed\Assembly-CSharp.dll (this message is harmless)
+Loading E:\Programing\Github\ProjectNB\NetWorking\233_Data\Managed\Assembly-CSharp.dll into Unity Child Domain
+Platform assembly: E:\Programing\Github\ProjectNB\NetWorking\233_Data\Managed\UnityEngine.UI.dll (this message is harmless)
+Loading E:\Programing\Github\ProjectNB\NetWorking\233_Data\Managed\UnityEngine.UI.dll into Unity Child Domain
+Platform assembly: E:\Programing\Github\ProjectNB\NetWorking\233_Data\Managed\UnityEngine.Networking.dll (this message is harmless)
+Loading E:\Programing\Github\ProjectNB\NetWorking\233_Data\Managed\UnityEngine.Networking.dll into Unity Child Domain
+Platform assembly: E:\Programing\Github\ProjectNB\NetWorking\233_Data\Managed\NATTraversalForUNET.dll (this message is harmless)
+Loading E:\Programing\Github\ProjectNB\NetWorking\233_Data\Managed\NATTraversalForUNET.dll into Unity Child Domain
+Platform assembly: E:\Programing\Github\ProjectNB\NetWorking\233_Data\Managed\Open.Nat.dll (this message is harmless)
+Loading E:\Programing\Github\ProjectNB\NetWorking\233_Data\Managed\Open.Nat.dll into Unity Child Domain
+Platform assembly: E:\Programing\Github\ProjectNB\NetWorking\233_Data\Managed\RakNetSwig.dll (this message is harmless)
+Loading E:\Programing\Github\ProjectNB\NetWorking\233_Data\Managed\RakNetSwig.dll into Unity Child Domain
+Platform assembly: E:\Programing\Github\ProjectNB\NetWorking\233_Data\Managed\System.Threading.dll (this message is harmless)
+Loading E:\Programing\Github\ProjectNB\NetWorking\233_Data\Managed\System.Threading.dll into Unity Child Domain
+- Completed reload, in  0.021 seconds
+Platform assembly: E:\Programing\Github\ProjectNB\NetWorking\233_Data\Managed\System.Core.dll (this message is harmless)
+Platform assembly: E:\Programing\Github\ProjectNB\NetWorking\233_Data\Managed\System.dll (this message is harmless)
+<RI> Initializing input.
+<RI> Input initialized.
+desktop: 1920x1080 60Hz; virtual: 1920x1080 at 0,0
+<RI> Initialized touch support.
+Fallback handler could not load library E:/Programing/Github/ProjectNB/NetWorking/233_Data/Mono/libc
+Fallback handler could not load library E:/Programing/Github/ProjectNB/NetWorking/233_Data/Mono/.\libc
+Fallback handler could not load library E:/Programing/Github/ProjectNB/NetWorking/233_Data/Mono/libc
+UnloadTime: 1.108936 ms
+Setting up 4 worker threads for Enlighten.
+  Thread -> id: 4784 -> priority: 1 
+  Thread -> id: 6af4 -> priority: 1 
+  Thread -> id: 25dc -> priority: 1 
+  Thread -> id: 18e8 -> priority: 1 
+Platform assembly: E:\Programing\Github\ProjectNB\NetWorking\233_Data\Managed\System.Xml.dll (this message is harmless)
+Platform assembly: E:\Programing\Github\ProjectNB\NetWorking\233_Data\Managed\Mono.Security.dll (this message is harmless)
+NATHelper: Something went wrong mapping port 7777->7777 (Tcp) 
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
+
+NATHelper: Something went wrong mapping port 7777->7777 (Udp) 
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
+
+NATHelper: Connected to Facilitator: 333266431584490437
+NATHelper: Something went wrong mapping port 62120->62120 (Udp) 
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
+
+NATHelper: Something went wrong mapping port 62120->62120 (Tcp) 
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
+
+reactor filed to acomplish request with code {1234}, bytesReceived {0}
+reactor filed to acomplish request with code {1234}, bytesReceived {0}
+reactor filed to acomplish request with code {1234}, bytesReceived {0}
+reactor filed to acomplish request with code {1234}, bytesReceived {0}
+Log: connection {1} has been disconnected by timeout; address {::ffff:127.0.0.1:62136}
+ServerDisconnected due to error: Timeout
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
+

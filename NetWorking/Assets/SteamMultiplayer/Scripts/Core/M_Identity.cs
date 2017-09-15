@@ -1,8 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using System.ComponentModel;
-using UnityEditor;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class M_Identity : MonoBehaviour
 {
