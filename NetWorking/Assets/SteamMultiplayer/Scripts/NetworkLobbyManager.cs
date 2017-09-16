@@ -143,6 +143,7 @@ public class NetworkLobbyManager : MonoBehaviour {
 
     void OnLobbyCreated(LobbyCreated_t pCallbacks, bool bIOFailure)
     {
+        pCallbacks.m_ulSteamIDLobby.ToString();
         lobby = new CSteamID(pCallbacks.m_ulSteamIDLobby);
         if (lobby_created != null) lobby_created.Invoke();
         JoinLobby(lobby);

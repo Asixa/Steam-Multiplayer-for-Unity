@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Net;
-using System.Net.NetworkInformation;
-using System.Text;
-using System.Threading;
 using UnityEngine.Networking.Types;
 using NetworkManager = NATTraversal.NetworkManager;
 using UnityEngine.UI;
@@ -10,25 +7,31 @@ public class SteamNetworkManager :NATTraversal.NetworkManager
 {
     public string ConnectAddress;
 
-    public UnityEngine.UI.InputField eip;
-    public UnityEngine.UI.InputField iip;
+    public InputField eip;
+    public InputField iip;
 
     public InputField oipv6;
     public InputField ipv6;
-
+    public InputField guid;
     public InputField out_field;
     public InputField out_field2;
     public InputField out_field3;
     public InputField out_field4;
     //创建房间  
+    void Update()
+    {
+        out_field3.text = natHelper.guid.ToString();
+    }
     void Start()
     {
         out_field.text = GetExternalIP();
-
+        
         out_field2.text =GetLocalIp();
         
         out_field4.text = getLocalIPv6();
 
+        //print(natHelper.guid.ToString());
+        
     }
     public void StartupHost()
     {
@@ -45,7 +48,7 @@ public class SteamNetworkManager :NATTraversal.NetworkManager
            eip.text,
             iip.text,
             7777,
-            233,
+            ulong.Parse(guid.text),
             NetworkID.Invalid,
             oipv6.text,
             ipv6.text

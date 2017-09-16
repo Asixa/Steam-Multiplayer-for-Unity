@@ -25,7 +25,7 @@ Platform assembly: E:\Programing\Github\ProjectNB\NetWorking\233_Data\Managed\Ra
 Loading E:\Programing\Github\ProjectNB\NetWorking\233_Data\Managed\RakNetSwig.dll into Unity Child Domain
 Platform assembly: E:\Programing\Github\ProjectNB\NetWorking\233_Data\Managed\System.Threading.dll (this message is harmless)
 Loading E:\Programing\Github\ProjectNB\NetWorking\233_Data\Managed\System.Threading.dll into Unity Child Domain
-- Completed reload, in  0.021 seconds
+- Completed reload, in  0.026 seconds
 Platform assembly: E:\Programing\Github\ProjectNB\NetWorking\233_Data\Managed\System.Core.dll (this message is harmless)
 Platform assembly: E:\Programing\Github\ProjectNB\NetWorking\233_Data\Managed\System.dll (this message is harmless)
 <RI> Initializing input.
@@ -35,28 +35,36 @@ desktop: 1920x1080 60Hz; virtual: 1920x1080 at 0,0
 Fallback handler could not load library E:/Programing/Github/ProjectNB/NetWorking/233_Data/Mono/libc
 Fallback handler could not load library E:/Programing/Github/ProjectNB/NetWorking/233_Data/Mono/.\libc
 Fallback handler could not load library E:/Programing/Github/ProjectNB/NetWorking/233_Data/Mono/libc
-UnloadTime: 1.108936 ms
-Setting up 4 worker threads for Enlighten.
-  Thread -> id: 4784 -> priority: 1 
-  Thread -> id: 6af4 -> priority: 1 
-  Thread -> id: 25dc -> priority: 1 
-  Thread -> id: 18e8 -> priority: 1 
 Platform assembly: E:\Programing\Github\ProjectNB\NetWorking\233_Data\Managed\System.Xml.dll (this message is harmless)
 Platform assembly: E:\Programing\Github\ProjectNB\NetWorking\233_Data\Managed\Mono.Security.dll (this message is harmless)
-NATHelper: Something went wrong mapping port 7777->7777 (Tcp) 
- 
-(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
-
+UnloadTime: 1.121582 ms
+Setting up 4 worker threads for Enlighten.
+  Thread -> id: 4524 -> priority: 1 
+  Thread -> id: 4af4 -> priority: 1 
+  Thread -> id: 45e8 -> priority: 1 
+  Thread -> id: 464c -> priority: 1 
 NATHelper: Something went wrong mapping port 7777->7777 (Udp) 
  
 (Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
 
-NATHelper: Connected to Facilitator: 333266431584490437
-NATHelper: Something went wrong mapping port 62120->62120 (Udp) 
+NATHelper: Something went wrong mapping port 7777->7777 (Tcp) 
  
 (Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
 
-NATHelper: Something went wrong mapping port 62120->62120 (Tcp) 
+NATHelper: Connected to Facilitator: 909727128390796450
+NATHelper: Something went wrong mapping port 65065->65065 (Udp) 
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
+
+NATHelper: Something went wrong mapping port 65065->65065 (Tcp) 
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
+
+reactor filed to acomplish request with code {1234}, bytesReceived {0}
+reactor filed to acomplish request with code {1234}, bytesReceived {0}
+reactor filed to acomplish request with code {1234}, bytesReceived {0}
+Log: connection {1} has been disconnected by timeout; address {::ffff:127.0.0.1:49710}
+ServerDisconnected due to error: Timeout
  
 (Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
 
@@ -64,7 +72,10 @@ reactor filed to acomplish request with code {1234}, bytesReceived {0}
 reactor filed to acomplish request with code {1234}, bytesReceived {0}
 reactor filed to acomplish request with code {1234}, bytesReceived {0}
 reactor filed to acomplish request with code {1234}, bytesReceived {0}
-Log: connection {1} has been disconnected by timeout; address {::ffff:127.0.0.1:62136}
+reactor filed to acomplish request with code {1234}, bytesReceived {0}
+reactor filed to acomplish request with code {1234}, bytesReceived {0}
+Log: connection {2} has been disconnected by timeout; address {::ffff:127.0.0.1:62519}
+Log: connection {1} has been disconnected by timeout; address {::ffff:127.0.0.1:63743}
 ServerDisconnected due to error: Timeout
  
 (Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
