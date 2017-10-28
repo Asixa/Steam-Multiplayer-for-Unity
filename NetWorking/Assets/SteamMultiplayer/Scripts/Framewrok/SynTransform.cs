@@ -10,16 +10,21 @@ public class SynTransform : SteamNetworkBehaviour
     private Vector3 TargetPosition;
 
 	void Update () {
-		CurrentTime-=Time.deltaTime;
-	    if (CurrentTime <= 0)
+	    if (IsLocalObject)
 	    {
-	        SendP2P(new P2PPackage(transform.position,ID,P2PPackageType.Undefined),EP2PSend.k_EP2PSendUnreliable);
+	        CurrentTime -= Time.deltaTime;
+	        if (CurrentTime <= 0)
+	        {
+	            CurrentTime = 1 / 9;
+	            SMC.SendPackets(new P2PPackage(new SMC.M_Vector3(transform.position), ID, P2PPackageType.Undefined),
+	                EP2PSend.k_EP2PSendUnreliable, false);
+	        }
 	    }
-	    transform.position = Vector3.Lerp(transform.position, TargetPosition, 1f);
+	    if (!IsLocalObject) transform.position = Vector3.Lerp(transform.position, TargetPosition, 1f);
 	}
 
-    public void Receive(object data)
+    public void Receive(Vector3 data)
     {
-        TargetPosition = (Vector3)data;
+        TargetPosition = data;
     }
 }

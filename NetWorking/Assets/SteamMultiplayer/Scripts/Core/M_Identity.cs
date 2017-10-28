@@ -2,12 +2,36 @@
 public class M_Identity : MonoBehaviour
 {
     [Locked] public int ID;
-    [Locked] public bool IsLocalSpawned;
+     public bool IsLocalSpawned;
     [Locked] public int SpawnID;
-    public M_Identity()
+
+    public bool AutoInit;
+
+    public void Start()
     {
-        ID = SMC.OnlineObjects.Count;
-        SMC.OnlineObjects.Add(this);
+        if(AutoInit)Init();
+    }
+
+    public void Init(int TargetID=-1)
+    {
+        if (TargetID == -1)
+        {
+            ID = SMC.instance. OnlineObjects.Count;
+            SMC.instance.OnlineObjects.Add(this);
+        }
+        else
+        {
+            ID = TargetID;
+            while (SMC.instance.OnlineObjects.Count <= TargetID)
+            {
+                 SMC.instance.OnlineObjects.Add(null);   
+            }
+            if (SMC.instance.OnlineObjects[TargetID] != null)
+            {
+                Debug.LogError("奇怪的物体");
+            }
+            SMC.instance.OnlineObjects[TargetID] = this;
+        }
     }
 }
 public class LockedAttribute : PropertyAttribute{}

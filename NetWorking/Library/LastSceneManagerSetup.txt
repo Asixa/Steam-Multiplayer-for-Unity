@@ -1,4 +1,4 @@
 sceneSetups:
-- path: Assets/LightingBox/Scenes/Terrain1.unity
+- path: Assets/SteamMultiplayer/Scenes/Asixa'sMain.unity
   isLoaded: 1
   isActive: 1

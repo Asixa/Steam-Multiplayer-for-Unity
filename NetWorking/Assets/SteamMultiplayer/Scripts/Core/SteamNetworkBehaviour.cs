@@ -11,9 +11,10 @@ namespace SteamMultiplayer
         Int,
         String,
         Float,
-        Reserve
+        Instantiate
     }
-    public class P2PPackage
+    [Serializable]
+    public struct P2PPackage
     {
         public object value;
         public int Object_identity;
@@ -29,15 +30,12 @@ namespace SteamMultiplayer
     [RequireComponent(typeof(M_Identity))]
     public class SteamNetworkBehaviour : MonoBehaviour
     {
-        public SteamNetworkBehaviour()
+        public void Awake()
         {
             identity = GetComponent<M_Identity>();
         }
 
-        public void SendP2P(object value, EP2PSend send)
-        {
-           SMC.SendPackets(new P2PPackage(value, identity.ID,P2PPackageType.Undefined), send);
-        }
+        public bool IsLocalObject{get { return identity.IsLocalSpawned; }}
 
         public int ID { get { return identity.ID; } }
         public M_Identity identity { get; set; }

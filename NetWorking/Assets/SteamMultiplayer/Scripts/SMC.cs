@@ -5,14 +5,18 @@ using Steamworks;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.IO;
 using SteamMultiplayer;
+
 [Serializable]
 public class SMC : MonoBehaviour
 {
+    public int 人数;
+
     public static SMC instance;
 
+    public static CSteamID SelfID;
     public static bool IsP2PHost;
     private CSteamID P2PHost;
-    public static List<M_Identity>OnlineObjects=new List<M_Identity>();
+    public  List<M_Identity>OnlineObjects=new List<M_Identity>();
 
 
     static Callback<SocketStatusCallback_t> m_SocketStatusCallback = Callback<SocketStatusCallback_t>.Create(OnSocketStatusCallback);
@@ -21,11 +25,15 @@ public class SMC : MonoBehaviour
 
     public void Awake()
     {
+       
         instance = this;
+        SelfID = SteamUser.GetSteamID();
+
     }
 
 	void Update ()
-    {
+	{
+	    人数 = PlayerList.Count;
         uint size;
         while (SteamNetworking.IsP2PPacketAvailable(out size))
         {
@@ -36,12 +44,13 @@ public class SMC : MonoBehaviour
             {
                 
                 P2PPackage package = (P2PPackage)new BinaryFormatter().Deserialize(new MemoryStream(data));
-                Debug.Log("从 " + SteamFriends.GetFriendPersonaName(remoteId) + "收到包" + package.type);
+                Debug.Log("从 " + SteamFriends.GetFriendPersonaName(remoteId) + "收到包" + package.type +" ID "+package.Object_identity);
                 DecodeP2PCode(package);
             }
         }
     }
 
+    #region CreateConnecttion
     public static void CreateConnection(CSteamID player)
     {
         SteamNetworking.CreateP2PConnectionSocket(player,
@@ -59,9 +68,11 @@ public class SMC : MonoBehaviour
         }
     }
 
+    #endregion
+
     #region SendPacket
 
-    public static void SendPackets(P2PPackage data,EP2PSend send)
+    public static void SendPackets(P2PPackage data,EP2PSend send, bool IncludeSelf = true)
     {
         //k_EP2PSendUnreliable – 小包，可以丢失，不需要依次发送，但要快
         //k_EP2PSendUnreliableNoDelay –     跟上面一样，但是不做链接检查，因为这样，它可能被丢失，但是这种方式是最快的传送方式。
@@ -69,14 +80,15 @@ public class SMC : MonoBehaviour
         //k_EP2PSendReliableWithBuffering –     跟上面一样，但是在发送前会缓冲数据，如果你发送大量的小包，它不会那么及时。（可能会延迟200ms）
         MemoryStream ms = new MemoryStream();
         new BinaryFormatter().Serialize(ms, data);
-        SendPacketsToAll(ms.GetBuffer(),send);
+        SendPacketsToAll(ms.GetBuffer(),send,IncludeSelf);
     }
-    /// Send the package to everyone
-    private static void SendPacketsToAll(byte[] data,EP2PSend send,bool IncludeSelf=true)
+
+    private static void SendPacketsToAll(byte[] data,EP2PSend send,bool IncludeSelf)
     {
         foreach (var item in PlayerList)
         {
-            if(IncludeSelf)
+            if(!IncludeSelf&&item==SelfID)continue;
+            Debug.Log("向"+item.m_SteamID+"发送数据包");
             SteamNetworking.SendP2PPacket(item, data, (uint)data.Length,send);
         }
     }
@@ -102,7 +114,7 @@ public class SMC : MonoBehaviour
         switch (package.type)
         {
             case P2PPackageType.Undefined:
-                OnlineObjects[package.Object_identity].GetComponent<SynTransform>().Receive(package.value);
+                instance.OnlineObjects[package.Object_identity].GetComponent<SynTransform>().Receive(To_Vector3((M_Vector3)package.value));
                 break;
             case P2PPackageType.Method:
                 break;
@@ -112,9 +124,10 @@ public class SMC : MonoBehaviour
                 break;
             case P2PPackageType.Float:
                 break;
-            case P2PPackageType.Reserve:
+            case P2PPackageType.Instantiate:
                 var info = (SpawnInfo) package.value;
-                Instantiate(NetworkLobbyManager.instance.SpawnInfo.Spawnable_objects.objects[info.SpawnID],info.pos,info.rot);
+                var obj=Instantiate(NetworkLobbyManager.instance.SpawnInfo.Spawnable_objects.objects[info.SpawnID],To_Vector3(info.pos),To_Quaternion(info.rot));
+                obj.Init(package.Object_identity);
                 break;
             default:
                 throw new ArgumentOutOfRangeException();
@@ -122,31 +135,84 @@ public class SMC : MonoBehaviour
     }
 
 
+    #region 生成
     [Serializable]
-    public class SpawnInfo
+    public struct SpawnInfo
     {
-        public Vector3 pos;
-        public Quaternion rot;
+        public M_Vector3 pos;
+        public M_Quaternion rot;
         public int SpawnID;
 
-        public SpawnInfo(Vector3 p,Quaternion r,int id)
+        public SpawnInfo(M_Vector3 pos, M_Quaternion rot, int ID)
         {
-            pos = p;
-            rot = r;
-            SpawnID = id;
+            this.pos = pos;
+            this.rot = rot;
+            SpawnID = ID;
         }
     }
-    //
-    public object Spawn(M_Identity id,Vector3 pos=new Vector3(),Quaternion rot=new Quaternion())
-    {
-       var a=JsonUtility.ToJson(new P2PPackage(new SpawnInfo(pos, rot, id.SpawnID), -1, P2PPackageType.Reserve));
 
-        var p = JsonUtility.FromJson<P2PPackage>(a);
-        Debug.Log(p.value+"  "+p.type+" "+p.Object_identity);
-        //
-        
-        return null;
-        SendPackets(new P2PPackage(new SpawnInfo(pos,rot,id.SpawnID),-1,P2PPackageType.Reserve),EP2PSend.k_EP2PSendReliable);
-        return Instantiate(NetworkLobbyManager.instance.SpawnInfo.Spawnable_objects.objects[id.SpawnID]);
+    public object Spawn(M_Identity id, Vector3 pos = new Vector3(), Quaternion rot = new Quaternion())
+    {
+       
+        var obj= Instantiate(NetworkLobbyManager.instance.SpawnInfo.Spawnable_objects.objects[id.SpawnID]);
+        obj.IsLocalSpawned = true;
+        obj.Init();
+        obj.ID = instance.OnlineObjects.Count;
+        instance.OnlineObjects.Add(obj);
+
+        SendPackets(
+            new P2PPackage(new SpawnInfo(new M_Vector3(pos), new M_Quaternion(rot), obj.SpawnID), obj.ID,
+                P2PPackageType.Instantiate),
+            EP2PSend.k_EP2PSendReliable, false);
+        return obj;
+
     }
+
+    #endregion
+
+
+    #region 重写Unity数学模型
+
+    #region 重写Vector3
+    [Serializable]
+    public struct M_Vector3
+    {
+        public float x, y, z;
+        public M_Vector3(Vector3 v)
+        {
+            x = v.x;
+            y = v.y;
+            z = v.z;
+        }
+    }
+    public static Vector3 To_Vector3(M_Vector3 input)
+    {
+        return new Vector3(input.x, input.y, input.z);
+    }
+    #endregion
+
+    #region 重写 Quaternion
+    [Serializable]
+    public struct M_Quaternion
+    {
+        public float x, y, z, w;
+        public M_Vector3 eulerAngles;
+        public M_Quaternion(Quaternion input)
+        {
+            x = input.x;
+            y = input.y;
+            z = input.z;
+            w = input.w;
+            eulerAngles = new M_Vector3(input.eulerAngles);
+        }
+    }
+    public static Quaternion To_Quaternion(M_Quaternion input)
+    {
+        return new Quaternion { x = input.x, y = input.y, z = input.z, w = input.w, eulerAngles = To_Vector3(input.eulerAngles) };
+    }
+    #endregion
+
+    #endregion
+
+
 }

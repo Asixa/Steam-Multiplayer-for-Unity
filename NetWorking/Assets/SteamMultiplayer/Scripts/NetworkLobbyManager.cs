@@ -88,6 +88,7 @@ public class NetworkLobbyManager : MonoBehaviour {
 
     public void LeaveLobby()
     {
+       
         SendChatMessage(SteamFriends.GetPersonaName() + " Lefted the Lobby",false);
         SteamMatchmaking.LeaveLobby(lobby);
         if (lobby_leaved != null) lobby_leaved.Invoke();
