@@ -1,4 +1,5 @@
 ﻿using SteamMultiplayer;
+using Steamworks;
 using UnityEngine;
 
 public class SynTransform : SteamNetworkBehaviour
@@ -7,17 +8,18 @@ public class SynTransform : SteamNetworkBehaviour
     private float CurrentTime;
 
     private Vector3 TargetPosition;
+
 	void Update () {
 		CurrentTime-=Time.deltaTime;
 	    if (CurrentTime <= 0)
 	    {
-	 
+	        SendP2P(new P2PPackage(transform.position,ID,P2PPackageType.Undefined),EP2PSend.k_EP2PSendUnreliable);
 	    }
 	    transform.position = Vector3.Lerp(transform.position, TargetPosition, 1f);
 	}
 
-    public void Receive(P2PPackage data)
+    public void Receive(object data)
     {
-        TargetPosition = (Vector3)data.value;
+        TargetPosition = (Vector3)data;
     }
 }

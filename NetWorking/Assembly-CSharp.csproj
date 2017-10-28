@@ -47,6 +47,8 @@
   </ItemGroup>
   <ItemGroup>
      <Compile Include="Assets\Scripts\Steamworks.NET\SteamManager.cs" />
+     <Compile Include="Assets\SteamMultiplayer\Demo\Script\DemoManager.cs" />
+     <Compile Include="Assets\SteamMultiplayer\Demo\Script\PlayerMove.cs" />
      <Compile Include="Assets\SteamMultiplayer\Scripts\Attribute\FoldoutGroupAttribute.cs" />
      <Compile Include="Assets\SteamMultiplayer\Scripts\Core\M_Identity.cs" />
      <Compile Include="Assets\SteamMultiplayer\Scripts\Core\SteamNetworkBehaviour.cs" />

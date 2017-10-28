@@ -1,4 +1,5 @@
 ﻿using System;
+using Steamworks;
 using UnityEngine;
 
 namespace SteamMultiplayer
@@ -9,21 +10,20 @@ namespace SteamMultiplayer
         Method,
         Int,
         String,
-        Float
+        Float,
+        Reserve
     }
-
     public class P2PPackage
     {
         public object value;
-        public ulong Object_identity;
+        public int Object_identity;
         public P2PPackageType type;
-        public P2PPackage(object v,ulong id, P2PPackageType type)
+        public P2PPackage(object v,int id, P2PPackageType type)
         {
             this.type = type;
             value = v;
             Object_identity = id;
         }
-        
     }
 
     [RequireComponent(typeof(M_Identity))]
@@ -34,36 +34,15 @@ namespace SteamMultiplayer
             identity = GetComponent<M_Identity>();
         }
 
-        public void SendP2P(object value)
+        public void SendP2P(object value, EP2PSend send)
         {
-           SMC.SendPackets(new P2PPackage(value, identity.ID,P2PPackageType.Undefined));
+           SMC.SendPackets(new P2PPackage(value, identity.ID,P2PPackageType.Undefined), send);
         }
 
+        public int ID { get { return identity.ID; } }
         public M_Identity identity { get; set; }
     }
 
-    public class SMO : MonoBehaviour
-    {
-        public GameObject Spawn(GameObject orginal, Vector3 position=new Vector3(), Quaternion rotation=new Quaternion())
-        {
-            var id = orginal.GetComponent<M_Identity>();
-            if (id==null) {
-                throw new Exception("The object is not spawnable");
-                return null;
-            }
-            var obj = Instantiate(id, position, rotation);
-            SMC.OnlineObjects.Add(obj);
-            return obj.gameObject;  
-        }
-
-        public void Delete(GameObject g)
-        {
-            Destroy(g);
-            var id = g.GetComponent<M_Identity>();
-            SMC.OnlineObjects.Remove(id);
-        }
-        
-    }
 
 }
 

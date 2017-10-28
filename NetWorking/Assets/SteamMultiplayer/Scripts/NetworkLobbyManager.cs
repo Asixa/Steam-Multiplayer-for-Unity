@@ -22,14 +22,9 @@
 //  本模块已经经过开光处理，绝无可能再产生bug
 //=============================================
 using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Threading;
 using UnityEngine;
 using Steamworks;
 using System.Text;
-using UnityEngine.Events;
-using UnityEngine.UI;
 [RequireComponent(typeof(SMC))]
 public class NetworkLobbyManager : MonoBehaviour {
     [Serializable]
@@ -43,7 +38,6 @@ public class NetworkLobbyManager : MonoBehaviour {
     {
         Port = 233,TimeoutSec = 300
     };
-
     [Serializable]
     public struct SpawnInfo_s
     {
@@ -77,6 +71,7 @@ public class NetworkLobbyManager : MonoBehaviour {
     void Start ()
 	{
 	    SteamAPI.Init();
+	    SpawnInfo.Spawnable_objects.Init();
 	    ChatInit();
 	}
 
