@@ -1,4 +1,4 @@
 sceneSetups:
-- path: "Assets/NAT\u6D4B\u8BD5.unity"
+- path: Assets/LightingBox/Scenes/Terrain1.unity
   isLoaded: 1
   isActive: 1

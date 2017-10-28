@@ -44,31 +44,26 @@ public class SMC : MonoBehaviour
     }
 
     #region SendPacket
-    /// Send the package to someone.
-    public static void SendPackets(CSteamID target,object data)
+
+    public static void SendPackets(P2PPackage data)
     {
-        var ms = new MemoryStream();
+        MemoryStream ms = new MemoryStream();
         new BinaryFormatter().Serialize(ms, data);
-        SendPackets(target, ms.GetBuffer());
+        SendPacketsToAll(ms.GetBuffer());
     }
-    /// Send the package to someone.
-    public static void SendPackets(CSteamID target,byte[] data)
-    {
-        SteamNetworking.SendP2PPacket(target, data, (uint)data.Length, EP2PSend.k_EP2PSendReliable);
-    }
-    /// Send the package to everyone except the server.
+
     public static void SendPackets(object data)
     {
         MemoryStream ms = new MemoryStream();
         new BinaryFormatter().Serialize(ms, data);
-        SendPackets(ms.GetBuffer());
+        SendPacketsToAll(ms.GetBuffer());
     }
-    /// Send the package to everyone except the server.
-    public static void SendPackets(byte[] data)
+    /// Send the package to everyone
+    private static void SendPacketsToAll(byte[] data)
     {
         foreach (var item in PlayerList)
         {
-            SendPackets(item, data);
+            SteamNetworking.SendP2PPacket(item, data, (uint)data.Length, EP2PSend.k_EP2PSendReliable);
         }
     }
     #endregion

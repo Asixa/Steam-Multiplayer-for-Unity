@@ -1,16 +1,23 @@
 ﻿using System;
-using System.Threading;
-using Steamworks;
 using UnityEngine;
 
 namespace SteamMultiplayer
 {
+    public enum P2PPackageType
+    {
+        Undefined,
+        Method,
+        Int,
+        String,
+        Float
+    }
+
     public class P2PPackage
     {
         public object value;
         public ulong Object_identity;
-        public int type;
-        public P2PPackage(object v,ulong id,int type)
+        public P2PPackageType type;
+        public P2PPackage(object v,ulong id, P2PPackageType type)
         {
             this.type = type;
             value = v;
@@ -27,9 +34,9 @@ namespace SteamMultiplayer
             identity = GetComponent<M_Identity>();
         }
 
-        public void Send(object value)
+        public void SendP2P(object value)
         {
-            new P2PPackage(value, identity.ID,P2PPackageType.undefined);
+           SMC.SendPackets(new P2PPackage(value, identity.ID,P2PPackageType.Undefined));
         }
 
         public M_Identity identity { get; set; }
@@ -46,10 +53,8 @@ namespace SteamMultiplayer
             }
             var obj = Instantiate(id, position, rotation);
             SMC.OnlineObjects.Add(obj);
-            return obj.gameObject;
-            
+            return obj.gameObject;  
         }
-
 
         public void Delete(GameObject g)
         {
@@ -57,16 +62,8 @@ namespace SteamMultiplayer
             var id = g.GetComponent<M_Identity>();
             SMC.OnlineObjects.Remove(id);
         }
-
-        public bool IsP2PHost{get { return SMC.IsP2PHost;;}}
+        
     }
 
-    public class P2PPackageType
-    {
-        public const int
-            undefined = 0,
-            spawn = 1
-        ;
-    }
 }
 
