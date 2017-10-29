@@ -58,6 +58,7 @@
      <Compile Include="Assets\SteamMultiplayer\Scripts\SpawnableObjects.cs" />
      <Compile Include="Assets\SteamMultiplayer\Scripts\UI\Lobby\LobbyList.cs" />
      <Compile Include="Assets\SteamMultiplayer\Scripts\UI\Lobby\LobbyPanel.cs" />
+     <Compile Include="Assets\SteamMultiplayer\Scripts\UI\Lobby\PlayerListPrefab.cs" />
      <Compile Include="Assets\SteamMultiplayer\Scripts\UI\Lobby\SingleLobbyButton.cs" />
      <None Include="Assets\Plugins\Steamworks.NET\redist\steam_appid.txt" />
  <Reference Include="UnityEngine.UI">

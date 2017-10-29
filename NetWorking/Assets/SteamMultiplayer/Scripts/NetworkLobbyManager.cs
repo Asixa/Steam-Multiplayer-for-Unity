@@ -19,7 +19,11 @@
 //                   `=---='
 //^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 //           佛祖保佑       永无BUG
-//  本模块已经经过开光处理，绝无可能再产生bug
+//  本类已经经过开光处理，绝无可能再产生bug
+//=============================================
+//本脚本用于大厅的创建和网络连接的数据获取
+//创建者: Asixa 2017-9-x
+//最新修改 Asixa 2017-10-29
 //=============================================
 using System;
 using UnityEngine;
@@ -88,7 +92,6 @@ public class NetworkLobbyManager : MonoBehaviour {
 
     public void LeaveLobby()
     {
-       
         SendChatMessage(SteamFriends.GetPersonaName() + " Lefted the Lobby",false);
         SteamMatchmaking.LeaveLobby(lobby);
         if (lobby_leaved != null) lobby_leaved.Invoke();

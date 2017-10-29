@@ -1,10 +1,12 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Steamworks;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.IO;
 using SteamMultiplayer;
+using UnityEngine.UI;
 
 [Serializable]
 public class SMC : MonoBehaviour
@@ -25,15 +27,21 @@ public class SMC : MonoBehaviour
 
     public void Awake()
     {
-       
         instance = this;
         SelfID = SteamUser.GetSteamID();
-
     }
 
 	void Update ()
 	{
-	    人数 = PlayerList.Count;
+	    
+	    if (人数 != PlayerList.Count)
+	    {
+	        人数 = PlayerList.Count;
+	        UpdatePlayerList();
+	    }
+
+        #region 接收数据包
+
         uint size;
         while (SteamNetworking.IsP2PPacketAvailable(out size))
         {
@@ -42,11 +50,43 @@ public class SMC : MonoBehaviour
             CSteamID remoteId;
             if (SteamNetworking.ReadP2PPacket(data, size, out bytesRead, out remoteId))
             {
-                
                 P2PPackage package = (P2PPackage)new BinaryFormatter().Deserialize(new MemoryStream(data));
                 Debug.Log("从 " + SteamFriends.GetFriendPersonaName(remoteId) + "收到包" + package.type +" ID "+package.Object_identity);
                 DecodeP2PCode(package);
             }
+        }
+        #endregion
+
+	    JunkPackagetime -= Time.deltaTime;
+	    if (JunkPackagetime <= 0)
+	    {
+	        JunkPackagetime = 1 / 8;
+	        SendPackets(new P2PPackage(null, -1, P2PPackageType.JunkData), EP2PSend.k_EP2PSendUnreliable, false);
+        }
+      
+    }
+
+    private float JunkPackagetime = 0.1f;
+    public void UpdatePlayerList()
+    {
+        if (LobbyPanel.instance.lobby_room.Player_List == null)
+            LobbyPanel.instance.lobby_room.Player_List = new List<PlayerListPrefab>();
+        else
+        {
+            foreach (PlayerListPrefab t in LobbyPanel.instance.lobby_room.Player_List)
+            {
+                Destroy(t);
+            }
+        }
+
+        foreach (var player in PlayerList)
+        {
+            var one = Instantiate(LobbyPanel.instance.lobby_room.PlayerListPrefab);
+            one.Name.text=SteamFriends.GetPlayerNickname(player);
+            StartCoroutine(_FetchAcatar(player, one.Icon));
+            one.transform.parent = LobbyPanel.instance.lobby_room.PlayerListPanel;
+            one.gameObject.SetActive(true);
+            Debug.Log("加载玩家列表—— "+player.m_SteamID);
         }
     }
 
@@ -74,10 +114,10 @@ public class SMC : MonoBehaviour
 
     public static void SendPackets(P2PPackage data,EP2PSend send, bool IncludeSelf = true)
     {
-        //k_EP2PSendUnreliable – 小包，可以丢失，不需要依次发送，但要快
-        //k_EP2PSendUnreliableNoDelay –     跟上面一样，但是不做链接检查，因为这样，它可能被丢失，但是这种方式是最快的传送方式。
-        //k_EP2PSendReliable – 可靠的信息，大包，依次收发。
-        //k_EP2PSendReliableWithBuffering –     跟上面一样，但是在发送前会缓冲数据，如果你发送大量的小包，它不会那么及时。（可能会延迟200ms）
+        //SendUnreliable – 小包，可以丢失，不需要依次发送，但要快
+        //SendUnreliableNoDelay –     跟上面一样，但是不做链接检查，因为这样，它可能被丢失，但是这种方式是最快的传送方式。
+        //SendReliable – 可靠的信息，大包，依次收发。
+        //SendReliableWithBuffering –     跟上面一样，但是在发送前会缓冲数据，如果你发送大量的小包，它不会那么及时。（可能会延迟200ms）
         MemoryStream ms = new MemoryStream();
         new BinaryFormatter().Serialize(ms, data);
         SendPacketsToAll(ms.GetBuffer(),send,IncludeSelf);
@@ -113,7 +153,18 @@ public class SMC : MonoBehaviour
         
         switch (package.type)
         {
-            case P2PPackageType.Undefined:
+            case P2PPackageType.位移同步:
+                Debug.Log("同步物体ID"+package.Object_identity);
+                while (instance.OnlineObjects.Count <= package.Object_identity)
+                {
+                    instance.OnlineObjects.Add(null);
+                }
+                if (instance.OnlineObjects[package.Object_identity] == null)
+                {
+                    var obj2= Instantiate(NetworkLobbyManager.instance.SpawnInfo.Spawnable_objects.objects[package.ObjectSpawnID]);
+                    obj2.TargetID = package.Object_identity;
+                    obj2.Init();
+                }
                 instance.OnlineObjects[package.Object_identity].GetComponent<SynTransform>().Receive(To_Vector3((M_Vector3)package.value));
                 break;
             case P2PPackageType.Method:
@@ -127,7 +178,11 @@ public class SMC : MonoBehaviour
             case P2PPackageType.Instantiate:
                 var info = (SpawnInfo) package.value;
                 var obj=Instantiate(NetworkLobbyManager.instance.SpawnInfo.Spawnable_objects.objects[info.SpawnID],To_Vector3(info.pos),To_Quaternion(info.rot));
-                obj.Init(package.Object_identity);
+                obj.TargetID = package.Object_identity;
+                obj.Init();
+                break;
+            case P2PPackageType.JunkData:
+                Debug.Log("收到垃圾信息");
                 break;
             default:
                 throw new ArgumentOutOfRangeException();
@@ -156,9 +211,8 @@ public class SMC : MonoBehaviour
        
         var obj= Instantiate(NetworkLobbyManager.instance.SpawnInfo.Spawnable_objects.objects[id.SpawnID]);
         obj.IsLocalSpawned = true;
-        obj.Init();
-        obj.ID = instance.OnlineObjects.Count;
-        instance.OnlineObjects.Add(obj);
+        obj.TargetID = instance.OnlineObjects.Count;
+        obj.Init(); 
 
         SendPackets(
             new P2PPackage(new SpawnInfo(new M_Vector3(pos), new M_Quaternion(rot), obj.SpawnID), obj.ID,
@@ -213,6 +267,36 @@ public class SMC : MonoBehaviour
     #endregion
 
     #endregion
+
+    #region 获取头像
+    private uint width, height;
+    private Texture2D downloadedAvatar;
+    IEnumerator _FetchAcatar(CSteamID id, RawImage ui)
+    {
+        var AvatarInt = SteamFriends.GetLargeFriendAvatar(id);
+        while (AvatarInt == -1)
+        {
+            yield return null;
+        }
+        if (AvatarInt > 0)
+        {
+            SteamUtils.GetImageSize(AvatarInt, out width, out height);
+
+            if (width > 0 && height > 0)
+            {
+                byte[] avatarStream = new byte[4 * (int)width * (int)height];
+                SteamUtils.GetImageRGBA(AvatarInt, avatarStream, 4 * (int)width * (int)height);
+
+                downloadedAvatar = new Texture2D((int)width, (int)height, TextureFormat.RGBA32, false);
+                downloadedAvatar.LoadRawTextureData(avatarStream);
+                downloadedAvatar.Apply();
+
+                ui.texture = downloadedAvatar;
+            }
+        }
+    }
+    #endregion
+
 
 
 }

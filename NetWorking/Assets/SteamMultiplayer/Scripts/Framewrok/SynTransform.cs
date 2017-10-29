@@ -16,7 +16,7 @@ public class SynTransform : SteamNetworkBehaviour
 	        if (CurrentTime <= 0)
 	        {
 	            CurrentTime = 1 / 9;
-	            SMC.SendPackets(new P2PPackage(new SMC.M_Vector3(transform.position), ID, P2PPackageType.Undefined),
+	            SMC.SendPackets(new P2PPackage(new SMC.M_Vector3(transform.position), ID, P2PPackageType.位移同步,identity.SpawnID),
 	                EP2PSend.k_EP2PSendUnreliable, false);
 	        }
 	    }

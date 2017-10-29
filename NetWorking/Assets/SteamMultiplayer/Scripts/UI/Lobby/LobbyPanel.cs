@@ -6,6 +6,7 @@ using UnityEngine.UI;
 
 public class LobbyPanel : MonoBehaviour
 {
+    public static LobbyPanel instance;
     [Serializable]
     public struct LobbyList
     {
@@ -21,9 +22,17 @@ public class LobbyPanel : MonoBehaviour
         public Text chat_prefab;
         public RectTransform chat_container;
         public InputField input;
+        public RectTransform PlayerListPanel;
+        public PlayerListPrefab PlayerListPrefab;
+        public List<PlayerListPrefab> Player_List;
     }
     [Layout]
     public LobbyRoom lobby_room;
+
+    void Awake()
+    {
+        instance = this;
+    }
 
     public void Start()
     {
