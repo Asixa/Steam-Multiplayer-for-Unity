@@ -52,7 +52,7 @@ public class SMC : MonoBehaviour
             {
                 P2PPackage package = (P2PPackage)new BinaryFormatter().Deserialize(new MemoryStream(data));
                 Debug.Log("从 " + SteamFriends.GetFriendPersonaName(remoteId) + "收到包" + package.type +" ID "+package.Object_identity);
-                DecodeP2PCode(package);
+                DecodeP2PCode(package,remoteId);
             }
         }
         #endregion
@@ -159,7 +159,7 @@ public class SMC : MonoBehaviour
 
     #endregion
 
-    private static void DecodeP2PCode(P2PPackage package)
+    private static void DecodeP2PCode(P2PPackage package,CSteamID steamid)
     {
         
         switch (package.type)
@@ -198,6 +198,11 @@ public class SMC : MonoBehaviour
                 break;
             case P2PPackageType.JunkData:
                 Debug.Log("收到垃圾信息");
+                if (!PlayerList.Contains(steamid))
+                {
+                    PlayerList.Add(steamid);
+                    CreateConnection(steamid);
+                }
                 break;
             default:
                 throw new ArgumentOutOfRangeException();

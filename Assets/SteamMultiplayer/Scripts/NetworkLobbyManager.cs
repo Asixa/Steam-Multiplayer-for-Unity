@@ -51,7 +51,7 @@ public class NetworkLobbyManager : MonoBehaviour {
     [Layout] public SpawnInfo_s SpawnInfo;
 
 
-    private CSteamID lobby;
+    public CSteamID lobby;
 
     CallResult<LobbyEnter_t> CLobbyJoin = new CallResult<LobbyEnter_t>();       //加入
     CallResult<LobbyCreated_t> CLobbyCreator = new CallResult<LobbyCreated_t>();//创建
