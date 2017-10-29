@@ -25,7 +25,7 @@ public class M_Identity : MonoBehaviour
             ID = TargetID;
             while (SMC.instance.OnlineObjects.Count <= TargetID)
             {
-                 SMC.instance.OnlineObjects.Add(null);   
+                SMC.instance.OnlineObjects.Add(null);   
             }
             if (SMC.instance.OnlineObjects[TargetID] != null)
             {

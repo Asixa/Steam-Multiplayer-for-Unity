@@ -18,9 +18,9 @@ public class SMC : MonoBehaviour
     public static CSteamID SelfID;
     public static bool IsP2PHost;
     private CSteamID P2PHost;
-    public  List<M_Identity>OnlineObjects=new List<M_Identity>();
+    public List<M_Identity>OnlineObjects=new List<M_Identity>();
 
-
+    static List<SNetSocket_t> m_SNetSocket = new List<SNetSocket_t>();
     static Callback<SocketStatusCallback_t> m_SocketStatusCallback = Callback<SocketStatusCallback_t>.Create(OnSocketStatusCallback);
     static Callback<P2PSessionRequest_t> m_P2PSessionRequest = Callback<P2PSessionRequest_t>.Create(OnP2PSessionRequest);
     static List<CSteamID> PlayerList = new List<CSteamID>();
@@ -90,7 +90,7 @@ public class SMC : MonoBehaviour
         }
     }
 
-    #region CreateConnecttion
+    #region CreateConnection
     public static void CreateConnection(CSteamID player)
     {
         SteamNetworking.CreateP2PConnectionSocket(player,
@@ -108,6 +108,17 @@ public class SMC : MonoBehaviour
         }
     }
 
+    #endregion
+
+    #region DestroyConnection
+    /// <param name="bNotifyRemoteEnd">true:套接字上的任何未读取数据将被丢弃，直到远端确认断开连接后，套接字才会被完全破坏</param>
+    public static void DestroyConnections(bool bNotifyRemoteEnd)
+    {
+        foreach (var item in m_SNetSocket)
+        {
+            SteamNetworking.DestroySocket(item, bNotifyRemoteEnd);
+        }
+    }
     #endregion
 
     #region SendPacket
@@ -166,6 +177,10 @@ public class SMC : MonoBehaviour
                     obj2.Init();
                 }
                 instance.OnlineObjects[package.Object_identity].GetComponent<SynTransform>().Receive(To_Vector3((M_Vector3)package.value));
+                break;
+            case P2PPackageType.SeverClose:
+                Debug.Log("服务器关闭");
+                DestroyConnections(true);
                 break;
             case P2PPackageType.Method:
                 break;

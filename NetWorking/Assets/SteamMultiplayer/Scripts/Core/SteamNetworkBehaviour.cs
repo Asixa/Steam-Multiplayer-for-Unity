@@ -1,7 +1,7 @@
 ﻿//=============================================
 // 网络连接基类
 //创建者 Asixa 2017-9-x
-//最新修改 Asixa 2017-10-29
+//最新修改 Fangxm 2017-10-29
 //=============================================
 
 using System;
@@ -26,6 +26,7 @@ namespace SteamMultiplayer
     public enum P2PPackageType
     {
         位移同步,
+        SeverClose,
         Method,
         Int,
         String,
