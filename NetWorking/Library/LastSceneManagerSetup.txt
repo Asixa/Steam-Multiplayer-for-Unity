@@ -1,4 +1,0 @@
-sceneSetups:
-- path: Assets/SteamMultiplayer/Scenes/Asixa'sMain.unity
-  isLoaded: 1
-  isActive: 1
