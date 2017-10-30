@@ -46,20 +46,21 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-     <Compile Include="Assets\Scripts\Steamworks.NET\SteamManager.cs" />
      <Compile Include="Assets\SteamMultiplayer\Demo\Script\DemoManager.cs" />
      <Compile Include="Assets\SteamMultiplayer\Demo\Script\PlayerMove.cs" />
      <Compile Include="Assets\SteamMultiplayer\Scripts\Attribute\FoldoutGroupAttribute.cs" />
-     <Compile Include="Assets\SteamMultiplayer\Scripts\Core\M_Identity.cs" />
+     <Compile Include="Assets\SteamMultiplayer\Scripts\Core\Identity.cs" />
+     <Compile Include="Assets\SteamMultiplayer\Scripts\Core\Lib.cs" />
+     <Compile Include="Assets\SteamMultiplayer\Scripts\Core\SMC.cs" />
      <Compile Include="Assets\SteamMultiplayer\Scripts\Core\SteamNetworkBehaviour.cs" />
+     <Compile Include="Assets\SteamMultiplayer\Scripts\Framewrok\AutoSync.cs" />
      <Compile Include="Assets\SteamMultiplayer\Scripts\Framewrok\SynTransform.cs" />
-     <Compile Include="Assets\SteamMultiplayer\Scripts\NetworkLobbyManager.cs" />
-     <Compile Include="Assets\SteamMultiplayer\Scripts\SMC.cs" />
-     <Compile Include="Assets\SteamMultiplayer\Scripts\SpawnableObjects.cs" />
-     <Compile Include="Assets\SteamMultiplayer\Scripts\UI\Lobby\LobbyList.cs" />
-     <Compile Include="Assets\SteamMultiplayer\Scripts\UI\Lobby\LobbyPanel.cs" />
-     <Compile Include="Assets\SteamMultiplayer\Scripts\UI\Lobby\PlayerListPrefab.cs" />
-     <Compile Include="Assets\SteamMultiplayer\Scripts\UI\Lobby\SingleLobbyButton.cs" />
+     <Compile Include="Assets\SteamMultiplayer\Scripts\Lobby\NetworkLobbyManager.cs" />
+     <Compile Include="Assets\SteamMultiplayer\Scripts\Lobby\SpawnableObjects.cs" />
+     <Compile Include="Assets\SteamMultiplayer\Scripts\Lobby\UI\LobbyList.cs" />
+     <Compile Include="Assets\SteamMultiplayer\Scripts\Lobby\UI\LobbyPanel.cs" />
+     <Compile Include="Assets\SteamMultiplayer\Scripts\Lobby\UI\PlayerListPrefab.cs" />
+     <Compile Include="Assets\SteamMultiplayer\Scripts\Lobby\UI\SingleLobbyButton.cs" />
      <None Include="Assets\Plugins\Steamworks.NET\redist\steam_appid.txt" />
  <Reference Include="UnityEngine.UI">
  <HintPath>E:/Unity/5.6/Editor/Data/UnityExtensions/Unity/GUISystem/UnityEngine.UI.dll</HintPath>

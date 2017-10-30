@@ -1,5 +1,4 @@
-﻿
-//                   _ooOoo_
+﻿//                   _ooOoo_
 //                  o8888888o
 //                  88" . "88
 //                  (| -_- |)
@@ -26,44 +25,53 @@
 //最新修改 Asixa 2017-10-29
 //=============================================
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 using Steamworks;
 using System.Text;
+using SteamMultiplayer;
+
 [RequireComponent(typeof(SMC))]
 public class NetworkLobbyManager : MonoBehaviour {
+
+    public static NetworkLobbyManager instance;
+
+    #region Variables
+    //Network info struct
     [Serializable]
-    public struct NetworkOpinion_s
+    public struct NetworkInfo
     {
         public int Port;
         public int TimeoutSec;
     }
-    [Layout]
-    public NetworkOpinion_s NetworkOpinion=new NetworkOpinion_s
+    public NetworkInfo networkInfo=new NetworkInfo
     {
         Port = 233,TimeoutSec = 300
     };
-    [Serializable]
-    public struct SpawnInfo_s
-    {
-        public SpawnableObjects Spawnable_objects;
-    }
 
-    [Layout] public SpawnInfo_s SpawnInfo;
+    //List than contains all the prefab that can spawn
+    public List<Identity> SpawnablePrefab = new List<Identity>();
 
-
+    //Current Lobby
+    [HideInInspector]
     public CSteamID lobby;
 
-    CallResult<LobbyEnter_t> CLobbyJoin = new CallResult<LobbyEnter_t>();       //加入
-    CallResult<LobbyCreated_t> CLobbyCreator = new CallResult<LobbyCreated_t>();//创建
+    //SteamCallBakck
+    CallResult<LobbyEnter_t> CLobbyJoin = new CallResult<LobbyEnter_t>();       //JoinLobby
+    CallResult<LobbyCreated_t> CLobbyCreator = new CallResult<LobbyCreated_t>();//CreateLobby
 
-    protected Callback<LobbyChatUpdate_t> m_LobbyChatUpdate;// 聊天面板
-    protected Callback<LobbyChatMsg_t> m_LobbyChatMsg;      // 聊天面板
+    protected Callback<LobbyChatUpdate_t> m_LobbyChatUpdate;// Chat Massage
+    protected Callback<LobbyChatMsg_t> m_LobbyChatMsg;      // Chat Message
 
+    //Chating
     [HideInInspector]
     public string chatstring = null;
 
-    public static NetworkLobbyManager instance;
-    public NetworkLobbyManager()
+    #endregion
+
+    #region Unity Reserved Functions
+
+    public void Awake()
     {
         if (instance != null)
         {
@@ -72,27 +80,29 @@ public class NetworkLobbyManager : MonoBehaviour {
         instance = this;
     }
 
-    void Start ()
-	{
-	    SteamAPI.Init();
-	    SpawnInfo.Spawnable_objects.Init();
-	    ChatInit();
-	}
+    void Start()
+    {
+        SteamAPI.Init();
+        Spawnable_Object_Init();
+        ChatInit();
+    }
 
     void Update()
     {
         SteamAPI.RunCallbacks();
     }
+    #endregion
 
+    #region Lobby Action
     public void JoinLobby(CSteamID lobby)
     {
-        this.lobby=lobby;
+        this.lobby = lobby;
         CLobbyJoin.Set(SteamMatchmaking.JoinLobby(this.lobby), OnLobbyJoined);
     }
 
     public void LeaveLobby()
     {
-        SendChatMessage(SteamFriends.GetPersonaName() + " Lefted the Lobby",false);
+        SendChatMessage(SteamFriends.GetPersonaName() + " Lefted the Lobby", false);
         SteamMatchmaking.LeaveLobby(lobby);
         if (lobby_leaved != null) lobby_leaved.Invoke();
     }
@@ -103,23 +113,33 @@ public class NetworkLobbyManager : MonoBehaviour {
         var lobby_type = ELobbyType.k_ELobbyTypePublic;
         CLobbyCreator.Set(SteamMatchmaking.CreateLobby(lobby_type, mumber_count), OnLobbyCreated);
     }
+    #endregion
 
-    public void SendChatMessage(string t,bool Chat=true)
+    #region Chat 
+    public void SendChatMessage(string t, bool Chat = true)
     {
-        string content=Chat? DateTime.Now.ToString("HH:mm:ss") + " "+SteamFriends.GetPersonaName()+": " + t :t;
+        string content = Chat ? DateTime.Now.ToString("HH:mm:ss") + " " + SteamFriends.GetPersonaName() + ": " + t : t;
         SteamMatchmaking.SendLobbyChatMsg(lobby, Encoding.Default.GetBytes(content), content.Length + 1);
     }
+    #endregion
 
-    //*************初始化*************
-
+    #region Initate Functions
     void ChatInit()
     {
         m_LobbyChatUpdate = Callback<LobbyChatUpdate_t>.Create(OnLobbyChatUpdate);
         m_LobbyChatMsg = Callback<LobbyChatMsg_t>.Create(OnLobbyChatMsg);
     }
 
-    //*************回调*************
+    public void Spawnable_Object_Init()
+    {
+        for (var i = 0; i < SpawnablePrefab.Count; i++)
+        {
+            SpawnablePrefab[i].SpawnID = i;
+        }
+    }
+    #endregion
 
+    #region CallBacks
     void OnLobbyChatUpdate(LobbyChatUpdate_t pCallback)
     {
         Debug.Log("[" + LobbyChatUpdate_t.k_iCallback + " - LobbyChatUpdate] - " + pCallback.m_ulSteamIDLobby + " -- " + pCallback.m_ulSteamIDUserChanged + " -- " + pCallback.m_ulSteamIDMakingChange + " -- " + pCallback.m_rgfChatMemberStateChange);
@@ -128,7 +148,7 @@ public class NetworkLobbyManager : MonoBehaviour {
     void OnLobbyChatMsg(LobbyChatMsg_t pCallback)
     {
 
-       // Debug.Log("[" + LobbyChatMsg_t.k_iCallback + " - LobbyChatMsg] - " + pCallback.m_ulSteamIDLobby + " -- " + pCallback.m_ulSteamIDUser + " -- " + pCallback.m_eChatEntryType + " -- " + pCallback.m_iChatID);
+        // Debug.Log("[" + LobbyChatMsg_t.k_iCallback + " - LobbyChatMsg] - " + pCallback.m_ulSteamIDLobby + " -- " + pCallback.m_ulSteamIDUser + " -- " + pCallback.m_eChatEntryType + " -- " + pCallback.m_iChatID);
         CSteamID SteamIDUser;
         var Data = new byte[4096];
         EChatEntryType ChatEntryType;
@@ -152,12 +172,11 @@ public class NetworkLobbyManager : MonoBehaviour {
     {
         SMC.CreateConnections(lobby);
         if (lobby_joined != null) lobby_joined.Invoke();
-        SendChatMessage(SteamFriends.GetPersonaName()+" Joined the Lobby",false);
-        //加入完成
+        SendChatMessage(SteamFriends.GetPersonaName() + " Joined the Lobby", false);
     }
+    #endregion
 
-    //************委托************
-
+    #region Unity Events
     public delegate void LobbyEvent();
     public LobbyEvent lobby_joined;
     public LobbyEvent lobby_created;
@@ -165,5 +184,6 @@ public class NetworkLobbyManager : MonoBehaviour {
 
     public delegate void LobbyChatMsgRecevied(string t);
     public LobbyChatMsgRecevied lobby_chat_msg_recevied;
+    #endregion
 
 }

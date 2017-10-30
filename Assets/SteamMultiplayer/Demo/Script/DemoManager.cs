@@ -1,8 +1,9 @@
-﻿using UnityEngine;
+﻿using SteamMultiplayer;
+using UnityEngine;
 
 public class DemoManager : MonoBehaviour
 {
-    public M_Identity Player;
+    public Identity Player;
     public Transform point;
     public void SpawnPlayer()
     {

@@ -9,30 +9,27 @@ using UnityEngine;
 
 namespace SteamMultiplayer
 {
-    [RequireComponent(typeof(M_Identity))]
+    [RequireComponent(typeof(Identity))]
     public class SteamNetworkBehaviour : MonoBehaviour
     {
         public void Awake()
         {
-            identity = GetComponent<M_Identity>();
+            identity = GetComponent<Identity>();
         }
 
         public bool IsLocalObject{get { return identity.IsLocalSpawned; }}
 
-        public int ID { get { return identity.ID; } }
-        public M_Identity identity { get; set; }
+        public Identity identity { get; set; }
     }
 
     public enum P2PPackageType
     {
         位移同步,
         SeverClose,
-        Method,
-        Int,
-        String,
-        Float,
         Instantiate,
         JunkData,
+        RPC,
+        Sync,
     }
     [Serializable]
     public struct P2PPackage
@@ -41,12 +38,19 @@ namespace SteamMultiplayer
         public int Object_identity;
         public P2PPackageType type;
         public int ObjectSpawnID;
-        public P2PPackage(object v, int id, P2PPackageType type,int SpawnID=-1)
+        public P2PPackage(object v, P2PPackageType type,Identity identity)
         {
             this.type = type;
             value = v;
-            Object_identity = id;
-            ObjectSpawnID = SpawnID;
+            Object_identity =identity.ID;
+            ObjectSpawnID = identity.SpawnID;
+        }
+        public P2PPackage(object v, P2PPackageType type)
+        {
+            this.type = type;
+            value = v;
+            Object_identity = -1;
+            ObjectSpawnID = -1;
         }
     }
 
