@@ -4,10 +4,12 @@
 //最新修改 Asixa 2017-10-29
 //=============================================
 
+using UnityEditor;
 using UnityEngine;
 
 namespace SteamMultiplayer
 {
+    [AddComponentMenu("SteamMultiplayer/Identity")]
     public class Identity : MonoBehaviour
     {
         public int ID = -1;

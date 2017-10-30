@@ -56,7 +56,6 @@
      <Compile Include="Assets\SteamMultiplayer\Scripts\Framewrok\AutoSync.cs" />
      <Compile Include="Assets\SteamMultiplayer\Scripts\Framewrok\SynTransform.cs" />
      <Compile Include="Assets\SteamMultiplayer\Scripts\Lobby\NetworkLobbyManager.cs" />
-     <Compile Include="Assets\SteamMultiplayer\Scripts\Lobby\SpawnableObjects.cs" />
      <Compile Include="Assets\SteamMultiplayer\Scripts\Lobby\UI\LobbyList.cs" />
      <Compile Include="Assets\SteamMultiplayer\Scripts\Lobby\UI\LobbyPanel.cs" />
      <Compile Include="Assets\SteamMultiplayer\Scripts\Lobby\UI\PlayerListPrefab.cs" />

@@ -30,7 +30,7 @@ using UnityEngine;
 using Steamworks;
 using System.Text;
 using SteamMultiplayer;
-
+[AddComponentMenu("SteamMultiplayer/LobbyManager")]
 [RequireComponent(typeof(SMC))]
 public class NetworkLobbyManager : MonoBehaviour {
 
