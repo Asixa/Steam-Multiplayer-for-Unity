@@ -50,8 +50,9 @@
      <Compile Include="Assets\Editor\Steamworks.NET\RedistInstall.cs" />
      <Compile Include="Assets\SteamMultiplayer\Scripts\Editor\Attribute\LayoutDrawer.cs" />
      <Compile Include="Assets\SteamMultiplayer\Scripts\Editor\Attribute\ReadOnlyDrawer.cs" />
-     <Compile Include="Assets\SteamMultiplayer\Scripts\Editor\Inspector\AutoSyncInspector.cs" />
      <Compile Include="Assets\SteamMultiplayer\Scripts\Editor\Inspector\IdentityInSpector.cs" />
+     <Compile Include="Assets\SteamMultiplayer\Scripts\Editor\Inspector\RPCInspector.cs" />
+     <Compile Include="Assets\SteamMultiplayer\Scripts\Editor\Inspector\SyncInspector.cs" />
      <None Include="Assets\Plugins\Steamworks.NET\redist\steam_appid.txt" />
  <Reference Include="UnityEditor.Advertisements">
  <HintPath>E:/Unity/5.6/Editor/Data/UnityExtensions/Unity/Advertisements/Editor/UnityEditor.Advertisements.dll</HintPath>

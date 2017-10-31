@@ -166,7 +166,7 @@ namespace SteamMultiplayer
                     }
                     break;
                 case P2PPackageType.Sync:
-                    var sync = instance.OnlineObjects[package.Object_identity].auto_sync;
+                    var sync = instance.OnlineObjects[package.Object_identity].sync;
                     if (sync != null)
                     {
                         sync.OnSync((object[])package.value);
@@ -299,7 +299,7 @@ namespace SteamMultiplayer
 
         #endregion
 
-        #region RPC
+        #region M_RPC
         public struct  RPCinfo
         {
             public string FuncName;

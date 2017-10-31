@@ -4,7 +4,6 @@
 //最新修改 Asixa 2017-10-29
 //=============================================
 
-using UnityEditor;
 using UnityEngine;
 
 namespace SteamMultiplayer
@@ -16,7 +15,8 @@ namespace SteamMultiplayer
         public bool IsLocalSpawned;
         public int SpawnID;
         public int TargetID = -1;
-        public AutoSync auto_sync;
+        public SteamSync sync;
+        public SteamRPC rpc;
 
         public void Init()
         {

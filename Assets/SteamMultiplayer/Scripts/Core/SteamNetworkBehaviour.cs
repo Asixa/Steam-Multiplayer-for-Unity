@@ -19,7 +19,7 @@ namespace SteamMultiplayer
 
         public bool IsLocalObject{get { return identity.IsLocalSpawned; }}
 
-        public Identity identity { get; set; }
+        public Identity identity;
     }
 
     public enum P2PPackageType
