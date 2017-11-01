@@ -5,6 +5,7 @@
 //=============================================
 
 using System;
+using Steamworks;
 using UnityEngine;
 
 namespace SteamMultiplayer
@@ -18,8 +19,12 @@ namespace SteamMultiplayer
         }
 
         public bool IsLocalObject{get { return identity.IsLocalSpawned; }}
-
         public Identity identity;
+
+        public void rpcCall(int funcIndex, params object[] values)
+        {
+            SMC.SendPackets(new P2PPackage(new SMC.RPCInfo(funcIndex, values), P2PPackageType.RPC), EP2PSend.k_EP2PSendReliable,false);
+        }
     }
 
     public enum P2PPackageType
@@ -28,8 +33,11 @@ namespace SteamMultiplayer
         SeverClose,
         Instantiate,
         JunkData,
-        RPC,
+        SendMessage,
         Sync,
+        DeleteObject,
+        LoadScene,
+        RPC
     }
     [Serializable]
     public struct P2PPackage
@@ -42,8 +50,16 @@ namespace SteamMultiplayer
         {
             this.type = type;
             value = v;
-            Object_identity =identity.ID;
-            ObjectSpawnID = identity.SpawnID;
+            if (identity != null)
+            {
+                Object_identity = identity.ID;
+                ObjectSpawnID = identity.SpawnID;
+            }
+            else
+            {
+                Object_identity = -1;
+                ObjectSpawnID = -1;
+            }
         }
         public P2PPackage(object v, P2PPackageType type)
         {

@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace SteamMultiplayer
 {
-    [AddComponentMenu("SteamMultiplayer/RPC")]
+    [AddComponentMenu("SteamMultiplayer/SteamRPC")]
     public class SteamRPC : SteamNetworkBehaviour
     {
         [System.Serializable]
@@ -27,6 +27,7 @@ namespace SteamMultiplayer
         void Awake()
         {
             GetComponent<Identity>().rpc = this;
+
 #if UNITY_EDITOR
             if (!Application.isPlaying)
             {
@@ -42,7 +43,7 @@ namespace SteamMultiplayer
             {
                Set();
             }
-
+           // mList[0].method.Invoke(mList[0].target,null);
         }
 
         public void Set()
@@ -69,6 +70,11 @@ namespace SteamMultiplayer
                     }
                 }
             }
+        }
+
+        public void Call(int id,object[] p=null)
+        {
+            mList[id].method.Invoke(mList[id].target, p);
         }
     }
 }

@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class TestScript : MonoBehaviour {
 
-	public void f1() { }
+	public void f1() { Debug.Log("Test Sucessed"); }
     public int f2(int v_i)
     {
         return 0;

@@ -73,6 +73,7 @@ public class NetworkLobbyManager : MonoBehaviour {
 
     public void Awake()
     {
+        DontDestroyOnLoad(gameObject);
         if (instance != null)
         {
             throw new Exception("There are more than one manager in the scene");
@@ -91,6 +92,12 @@ public class NetworkLobbyManager : MonoBehaviour {
     {
         SteamAPI.RunCallbacks();
     }
+
+    void OnApplicationQuit()
+    {
+        LeaveLobby();
+    }
+
     #endregion
 
     #region Lobby Action

@@ -5,6 +5,7 @@ using UnityEngine;
 using Steamworks;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.IO;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 namespace SteamMultiplayer
@@ -115,22 +116,35 @@ namespace SteamMultiplayer
         // Analyze and run the P2Ppackage
         private static void DecodeP2PCode(P2PPackage package, CSteamID steamid)
         {
-
+            if (package.Object_identity != -1)
+            {
+                while (instance.OnlineObjects.Count <= package.Object_identity)
+                {
+                    instance.OnlineObjects.Add(null);
+                }
+                if (instance.OnlineObjects[package.Object_identity] == null)
+                {
+                    var obj2 = Instantiate(
+                        NetworkLobbyManager.instance.SpawnablePrefab[package.ObjectSpawnID]);
+                    obj2.TargetID = package.Object_identity;
+                    obj2.Init();
+                }
+            }
             switch (package.type)
             {
                 case P2PPackageType.位移同步:
                     Debug.Log("同步物体ID" + package.Object_identity);
-                    while (instance.OnlineObjects.Count <= package.Object_identity)
-                    {
-                        instance.OnlineObjects.Add(null);
-                    }
-                    if (instance.OnlineObjects[package.Object_identity] == null)
-                    {
-                        var obj2 = Instantiate(
-                            NetworkLobbyManager.instance.SpawnablePrefab[package.ObjectSpawnID]);
-                        obj2.TargetID = package.Object_identity;
-                        obj2.Init();
-                    }
+                    //while (instance.OnlineObjects.Count <= package.Object_identity)
+                    //{
+                    //    instance.OnlineObjects.Add(null);
+                    //}
+                    //if (instance.OnlineObjects[package.Object_identity] == null)
+                    //{
+                    //    var obj2 = Instantiate(
+                    //        NetworkLobbyManager.instance.SpawnablePrefab[package.ObjectSpawnID]);
+                    //    obj2.TargetID = package.Object_identity;
+                    //    obj2.Init();
+                    //}
                     instance.OnlineObjects[package.Object_identity].GetComponent<SynTransform>()
                         .Receive(Lib.To_Vector3((Lib.M_Vector3) package.value));
                     break;
@@ -154,8 +168,8 @@ namespace SteamMultiplayer
                         CreateConnection(steamid);
                     }
                     break;
-                case P2PPackageType.RPC:
-                    var rpc_info = (RPCinfo) package.value;
+                case P2PPackageType.SendMessage:
+                    var rpc_info = (SendMessageInfo) package.value;
                     if (rpc_info.have_value)
                     {
                         instance.OnlineObjects[package.Object_identity].SendMessage(rpc_info.FuncName, rpc_info.Values);
@@ -172,8 +186,24 @@ namespace SteamMultiplayer
                         sync.OnSync((object[])package.value);
                     }
                     break;
+                case P2PPackageType.DeleteObject:
+                    if (instance.OnlineObjects[package.Object_identity] != null)
+                    {
+                        Destroy(instance.OnlineObjects[package.Object_identity].gameObject);
+                    }
+                    break;
+                case P2PPackageType.LoadScene:
+                    SceneManager.LoadScene((string)package.value);
+                    break;
+                case P2PPackageType.RPC:
+                    var callInfo = (RPCInfo) package.value;
+                    
+                    instance.OnlineObjects[package.Object_identity].rpc.Call(callInfo.FuncIndex,callInfo.Values);
+                    break;
                 default:
+                {
                     throw new ArgumentOutOfRangeException();
+                }
             }
         }
 
@@ -299,22 +329,69 @@ namespace SteamMultiplayer
 
         #endregion
 
-        #region M_RPC
-        public struct  RPCinfo
+        #region Delete
+
+        public void Delete(GameObject obj)
+        {
+            var id = obj.GetComponent<Identity>();
+            if (id!=null)
+            {
+                SendPackets(new P2PPackage(null,P2PPackageType.DeleteObject,id),EP2PSend.k_EP2PSendReliable,false);
+            }
+            else
+            {
+                Destroy(obj.gameObject);
+            }
+        }
+
+
+        #endregion
+
+        #region LoadScene
+
+        public void LoadSence(Scene scene)
+        {
+            SendPackets(new P2PPackage(scene.name,P2PPackageType.LoadScene),EP2PSend.k_EP2PSendReliable,false);
+            SceneManager.LoadScene(scene.name);
+        }
+        public void LoadSence(string scene)
+        {
+            SendPackets(new P2PPackage(scene, P2PPackageType.LoadScene), EP2PSend.k_EP2PSendReliable, false);
+            SceneManager.LoadScene(scene);
+        }
+
+
+        #endregion
+
+        #region SendMessage
+        public struct  SendMessageInfo
         {
             public string FuncName;
             public object[] Values;
             public bool have_value;
-            public RPCinfo(string funcName,object[] values)
+            public SendMessageInfo(string funcName,object[] values)
             {
                 FuncName = funcName;
                 Values = values.Length > 0 ? values : null;
                 have_value = values.Length > 0;
             }
         }
-        public void RpcCall(string funcName,int Object_ID, params object[] values)
+        public void RpcSendMessage(string funcName,int Object_ID, params object[] values)
         {
-            SendPackets(new P2PPackage(new RPCinfo(funcName,values),P2PPackageType.RPC), EP2PSend.k_EP2PSendReliable);
+            SendPackets(new P2PPackage(new SendMessageInfo(funcName,values),P2PPackageType.SendMessage), EP2PSend.k_EP2PSendReliable);
+        }
+
+        public struct RPCInfo
+        {
+            public int FuncIndex;
+            public object[] Values;
+            public bool have_value;
+            public RPCInfo(int funcIndex, object[] values)
+            {
+                FuncIndex = funcIndex;
+                Values = values.Length > 0 ? values : null;
+                have_value = values.Length > 0;
+            }
         }
         #endregion
 

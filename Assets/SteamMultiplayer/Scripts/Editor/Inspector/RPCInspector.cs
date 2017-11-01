@@ -33,7 +33,7 @@ public class RPCInspector : Editor
         }
         GUI.backgroundColor = Color.green;
 
-        if (GUILayout.Button("Add a New RPC Function"))
+        if (GUILayout.Button("Add a New Sync Function"))
         {
             var ent = new SteamRPC.Entry { target = components[0] };
             rpc.entries.Add(ent);
@@ -80,13 +80,13 @@ public class RPCInspector : Editor
         return names;
     }
 
-    private static bool DrawTarget(SteamRPC sync, int index, List<Component> components, string[] names)
+    private static bool DrawTarget(SteamRPC _rpc, int index, List<Component> components, string[] names)
     {
-        var ent = sync.entries[index];
+        var ent = _rpc.entries[index];
         if (ent.target == null)
         {
             ent.target = components[0];
-            EditorUtility.SetDirty(sync);
+            EditorUtility.SetDirty(_rpc);
         }
 
         int oldIndex = 0;
@@ -100,21 +100,26 @@ public class RPCInspector : Editor
         }
 
         GUI.backgroundColor = Color.red;
+        GUI.skin.label.alignment=TextAnchor.MiddleCenter;
+
+        // EditorGUILayout.HelpBox(index.ToString(), MessageType.None);
+        EditorGUILayout.LabelField(index.ToString(), GUILayout.Width(20f), GUILayout.Height(14f));
         bool delete = GUILayout.Button("X", GUILayout.Width(24f), GUILayout.Height(14f));
+        
         GUI.backgroundColor = Color.white;
         int newIndex = EditorGUILayout.Popup(oldIndex, names);
 
         if (delete)
         {
-            sync.entries.RemoveAt(index);
-            EditorUtility.SetDirty(sync);
+            _rpc.entries.RemoveAt(index);
+            EditorUtility.SetDirty(_rpc);
             return false;
         }
 
         if (newIndex != oldIndex)
         {
             ent.target = (newIndex == 0) ? null : components[newIndex - 1];
-            EditorUtility.SetDirty(sync);
+            EditorUtility.SetDirty(_rpc);
         }
 
         return true;

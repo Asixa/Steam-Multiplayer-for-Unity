@@ -8,7 +8,7 @@ namespace SteamMultiplayer
     {
         Safely,Quickly
     }
-    [AddComponentMenu("SteamMultiplayer/Sync")]
+    [AddComponentMenu("SteamMultiplayer/SteamSync")]
     [ExecuteInEditMode]
     [RequireComponent(typeof(Identity))]
     public class SteamSync :SteamNetworkBehaviour
@@ -129,6 +129,8 @@ namespace SteamMultiplayer
                 object val = (ext.field != null)
                     ? val = ext.field.GetValue(ext.target)
                     : val = ext.property.GetValue(ext.target, null);
+                if(val.GetType()==(typeof(Vector3)))val=new Lib.M_Vector3((Vector3)val);
+                if (val.GetType() == (typeof(Quaternion))) val = new Lib.M_Quaternion((Quaternion)val);
 
                 if (!val.Equals(ext.last_value))
                     changed = true;
@@ -157,8 +159,37 @@ namespace SteamMultiplayer
             {
                 ExtendedEntry ext = mList[i];
                 ext.last_value = val[i];
-                if (ext.field != null) ext.field.SetValue(ext.target, ext.last_value);
-                else ext.property.SetValue(ext.target, ext.last_value, null);
+                if (ext.field != null)
+                {
+                    if (ext.field.FieldType == typeof(Vector3))
+                    {
+                        ext.field.SetValue(ext.target, Lib.To_Vector3((Lib.M_Vector3)ext.last_value));
+                    }
+                    else if (ext.field.FieldType == typeof(Quaternion))
+                    {
+                        ext.field.SetValue(ext.target, Lib.To_Quaternion((Lib.M_Quaternion)ext.last_value));
+                    }
+                    else
+                    {
+                        ext.field.SetValue(ext.target, ext.last_value);
+                    }    
+                }
+                else
+                {
+                    if (ext.property.PropertyType == typeof(Vector3))
+                    {
+                        ext.property.SetValue(ext.target, Lib.To_Vector3((Lib.M_Vector3)ext.last_value),null);
+                    }
+                    else if (ext.property.PropertyType == typeof(Quaternion))
+                    {
+                        ext.property.SetValue(ext.target, Lib.To_Quaternion((Lib.M_Quaternion)ext.last_value),null);
+                    }
+                    else
+                    {
+                        ext.property.SetValue(ext.target, ext.last_value, null);
+                    }
+                    
+                }
             }
         }
     }

@@ -168,6 +168,8 @@ public class SyncInspector : Editor
         if (type == typeof(Color)) return true;
         if (type == typeof(DateTime)) return true;
         if (type == typeof(IPEndPoint)) return true;
+        if (type == typeof(Lib.M_Vector3)) return true;
+        if (type == typeof(Lib.M_Quaternion)) return true;
         if (type == typeof(bool[])) return true;
         if (type == typeof(byte[])) return true;
         if (type == typeof(ushort[])) return true;
