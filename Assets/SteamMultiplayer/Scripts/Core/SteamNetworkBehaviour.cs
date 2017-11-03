@@ -19,6 +19,7 @@ namespace SteamMultiplayer
         }
 
         public bool IsLocalObject{get { return identity.IsLocalSpawned; }}
+        [HideInInspector]
         public Identity identity;
 
         public void rpcCall(int funcIndex, params object[] values)
@@ -37,7 +38,10 @@ namespace SteamMultiplayer
         Sync,
         DeleteObject,
         LoadScene,
-        RPC
+        RPC,
+        Custom,
+        AnimatorState,
+        AnimatorParamter
     }
     [Serializable]
     public struct P2PPackage

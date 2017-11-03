@@ -15,7 +15,8 @@ public class IdentityInspector : Editor
         content +=identity.IsLocalSpawned ? "Local " : "Remote";
         content += "   ";
         content += "SpawnID:" +identity.SpawnID;
-        EditorGUILayout.HelpBox(content,MessageType.None);
-
+        EditorGUILayout.BeginVertical("box");
+        EditorGUILayout.LabelField(content);
+        EditorGUILayout.EndVertical();
     }
 }

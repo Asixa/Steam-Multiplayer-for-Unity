@@ -17,6 +17,7 @@ namespace SteamMultiplayer
         public int TargetID = -1;
         public SteamSync sync;
         public SteamRPC rpc;
+        public SteamAnimator anim;
 
         public void Init()
         {

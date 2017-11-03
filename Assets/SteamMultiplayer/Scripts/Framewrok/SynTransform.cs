@@ -6,6 +6,7 @@ namespace SteamMultiplayer
 {
     public class SynTransform : SteamNetworkBehaviour
     {
+
         public int TimesPerSecond = 9;
         private float CurrentTime;
 

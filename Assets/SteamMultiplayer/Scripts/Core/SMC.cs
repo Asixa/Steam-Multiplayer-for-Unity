@@ -5,6 +5,7 @@ using UnityEngine;
 using Steamworks;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.IO;
+using UnityEngine.Events;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
@@ -43,7 +44,13 @@ namespace SteamMultiplayer
 
         //Time to send junkdata
         private float JunkPackagetime = 0.1f;
+        //[Serializable]
+        public struct SMCEvents 
+        {
+            public UnityEvent<string,object> CustomPacket;
+        }
 
+        public SMCEvents events;
         #endregion
 
         #region Unity reserved functions
@@ -158,7 +165,7 @@ namespace SteamMultiplayer
                         NetworkLobbyManager.instance.SpawnablePrefab[info.SpawnID],
                         Lib.To_Vector3(info.pos), Lib.To_Quaternion(info.rot));
                     obj.TargetID = package.Object_identity;
-                    obj.Init();
+                    obj.Init(); 
                     break;
                 case P2PPackageType.JunkData:
                     Debug.Log("收到垃圾信息");
@@ -199,6 +206,16 @@ namespace SteamMultiplayer
                     var callInfo = (RPCInfo) package.value;
                     
                     instance.OnlineObjects[package.Object_identity].rpc.Call(callInfo.FuncIndex,callInfo.Values);
+                    break;
+                case P2PPackageType.Custom:
+                    var CustomPacket = (CustomPacket) package.value;
+                    instance.events.CustomPacket.Invoke(CustomPacket.tag,CustomPacket.value);
+                    break;
+                case P2PPackageType.AnimatorState:
+                    instance.OnlineObjects[package.Object_identity].anim.SetAnimState((SteamAnimator.MyAniationMessage)package.value);
+                    break;
+                case P2PPackageType.AnimatorParamter:
+                    instance.OnlineObjects[package.Object_identity].anim.SetParamter((SteamAnimator.MyAniationParamterMessage[])package.value);
                     break;
                 default:
                 {
@@ -242,6 +259,20 @@ namespace SteamMultiplayer
         #endregion
 
         #region SendPacket
+        public struct CustomPacket
+        {
+            public string tag;
+            public object value;
+            public CustomPacket(string t, object v)
+            {
+                tag = t;
+                value = v;
+            }
+        }
+        public static void SendCustomPacket(string tag, object value, EP2PSend send,Identity id)
+        {
+            SendPackets(new P2PPackage(new CustomPacket(tag,value),P2PPackageType.Custom,id),send,false);
+        }
 
         public static void SendPackets(P2PPackage data, EP2PSend send, bool IncludeSelf = true)
         {

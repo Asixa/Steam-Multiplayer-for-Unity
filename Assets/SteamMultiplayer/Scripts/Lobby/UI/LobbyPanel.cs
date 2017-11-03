@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System;
+using UnityEngine.Networking;
 using UnityEngine.UI;
 
 public class LobbyPanel : MonoBehaviour
@@ -42,8 +43,8 @@ public class LobbyPanel : MonoBehaviour
     void init()
     {
         NetworkLobbyManager.instance.lobby_chat_msg_recevied += UpdateChatPanel;
-        NetworkLobbyManager.instance.lobby_joined += LobbyJoined;
-        NetworkLobbyManager.instance.lobby_leaved += LobbyLeaved;
+        NetworkLobbyManager.instance.events.lobby_joined.AddListener(LobbyJoined);
+        NetworkLobbyManager.instance.events.lobby_leaved.AddListener(LobbyLeaved);
     }
 
     void LobbyJoined()

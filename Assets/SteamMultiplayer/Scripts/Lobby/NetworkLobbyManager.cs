@@ -30,6 +30,8 @@ using UnityEngine;
 using Steamworks;
 using System.Text;
 using SteamMultiplayer;
+using UnityEngine.Events;
+
 [AddComponentMenu("SteamMultiplayer/LobbyManager")]
 [RequireComponent(typeof(SMC))]
 public class NetworkLobbyManager : MonoBehaviour {
@@ -111,7 +113,7 @@ public class NetworkLobbyManager : MonoBehaviour {
     {
         SendChatMessage(SteamFriends.GetPersonaName() + " Lefted the Lobby", false);
         SteamMatchmaking.LeaveLobby(lobby);
-        if (lobby_leaved != null) lobby_leaved.Invoke();
+        if (events.lobby_leaved != null) events.lobby_leaved.Invoke();
     }
 
     public void CreateLobby()
@@ -171,24 +173,30 @@ public class NetworkLobbyManager : MonoBehaviour {
     {
         pCallbacks.m_ulSteamIDLobby.ToString();
         lobby = new CSteamID(pCallbacks.m_ulSteamIDLobby);
-        if (lobby_created != null) lobby_created.Invoke();
+        if (events.lobby_created != null) events.lobby_created.Invoke();
         JoinLobby(lobby);
     }
 
     void OnLobbyJoined(LobbyEnter_t pCallbacks, bool bIOFailure)
     {
         SMC.CreateConnections(lobby);
-        if (lobby_joined != null) lobby_joined.Invoke();
+        if (events.lobby_joined != null) events.lobby_joined.Invoke();
         SendChatMessage(SteamFriends.GetPersonaName() + " Joined the Lobby", false);
     }
     #endregion
 
     #region Unity Events
-    public delegate void LobbyEvent();
-    public LobbyEvent lobby_joined;
-    public LobbyEvent lobby_created;
-    public LobbyEvent lobby_leaved;
+  //  public delegate void LobbyEvent();
 
+    [Serializable]
+    public struct LobbyEvents
+    {
+        public UnityEvent lobby_joined;
+        public UnityEvent lobby_created;
+        public UnityEvent lobby_leaved;
+    }
+
+    public LobbyEvents events;
     public delegate void LobbyChatMsgRecevied(string t);
     public LobbyChatMsgRecevied lobby_chat_msg_recevied;
     #endregion
