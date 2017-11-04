@@ -151,7 +151,7 @@ public class NetworkLobbyManager : MonoBehaviour {
     #region CallBacks
     void OnLobbyChatUpdate(LobbyChatUpdate_t pCallback)
     {
-        Debug.Log("[" + LobbyChatUpdate_t.k_iCallback + " - LobbyChatUpdate] - " + pCallback.m_ulSteamIDLobby + " -- " + pCallback.m_ulSteamIDUserChanged + " -- " + pCallback.m_ulSteamIDMakingChange + " -- " + pCallback.m_rgfChatMemberStateChange);
+   //     Debug.Log("[" + LobbyChatUpdate_t.k_iCallback + " - LobbyChatUpdate] - " + pCallback.m_ulSteamIDLobby + " -- " + pCallback.m_ulSteamIDUserChanged + " -- " + pCallback.m_ulSteamIDMakingChange + " -- " + pCallback.m_rgfChatMemberStateChange);
     }
 
     void OnLobbyChatMsg(LobbyChatMsg_t pCallback)

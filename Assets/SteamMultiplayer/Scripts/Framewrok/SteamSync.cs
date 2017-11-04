@@ -188,7 +188,6 @@ namespace SteamMultiplayer
                     {
                         ext.property.SetValue(ext.target, ext.last_value, null);
                     }
-                    
                 }
             }
         }

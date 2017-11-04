@@ -58,11 +58,20 @@ namespace SteamMultiplayer
         public void Awake()
         {
             instance = this;
+        }
+
+        public void Start()
+        {
             SelfID = SteamUser.GetSteamID();
         }
 
         void Update()
         {
+            if (Input.GetKeyDown(KeyCode.P))
+            {
+                SteamAPI.Shutdown();
+                Debug.Log("Steam链接已关闭");
+            }
 
             if (PlayerCount != PlayerList.Count)
             {
@@ -457,5 +466,12 @@ namespace SteamMultiplayer
         }
 
         #endregion
+
+        void OnApplicationQuit()
+        {
+            print("程序关闭");
+            SteamAPI.Shutdown();
+
+        }
     }
 }

@@ -55,6 +55,7 @@
      <Compile Include="Assets\SteamMultiplayer\Scripts\Core\SMC.cs" />
      <Compile Include="Assets\SteamMultiplayer\Scripts\Core\SteamNetworkBehaviour.cs" />
      <Compile Include="Assets\SteamMultiplayer\Scripts\Framewrok\SteamAnimator.cs" />
+     <Compile Include="Assets\SteamMultiplayer\Scripts\Framewrok\SteamInit.cs" />
      <Compile Include="Assets\SteamMultiplayer\Scripts\Framewrok\SteamRPC.cs" />
      <Compile Include="Assets\SteamMultiplayer\Scripts\Framewrok\SteamSync.cs" />
      <Compile Include="Assets\SteamMultiplayer\Scripts\Framewrok\SynTransform.cs" />

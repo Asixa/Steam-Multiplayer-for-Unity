@@ -117,7 +117,7 @@ public class LobbyList : MonoBehaviour {
             return; // TODO: Recovery
         }
 
-        Debug.Log("[" + LobbyMatchList_t.k_iCallback + " - LobbyMatchList] - " + pCallback.m_nLobbiesMatching);
+        Debug.Log("[刷新到大厅]:" + pCallback.m_nLobbiesMatching);
 
         if (pCallback.m_nLobbiesMatching == 0)
         {
