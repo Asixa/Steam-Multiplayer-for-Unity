@@ -28,15 +28,15 @@ public class Player : SteamNetworkBehaviour
         {
             if (Input.GetKeyDown(KeyCode.R))
             {
-                rpcCall(0);
+                if (currentColor < 2) currentColor++;
+                else currentColor = 0;
+                rpcCall(0,currentColor);
             }
         }
     }
 
-    public void ChangeColor()
+    public void ChangeColor(int id)
     {
-        if (currentColor < 2) currentColor++;
-        else currentColor = 0;
         so_renderer.color = colors[currentColor];
     }
 	
