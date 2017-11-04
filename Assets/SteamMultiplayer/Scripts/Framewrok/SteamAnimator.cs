@@ -45,6 +45,7 @@ namespace SteamMultiplayer
         [Serializable]
         public struct MyAniationParamterMessage
         {
+            public string name;
             public int _int;
             public float _float;
             public bool _bool;
@@ -55,6 +56,7 @@ namespace SteamMultiplayer
                 _int = a.GetInteger(p.nameHash);
                 _float = a.GetFloat(p.nameHash);
                 _bool = a.GetBool(p.nameHash);
+                name = a.name;
                 switch (p.type)
                 {
                     case AnimatorControllerParameterType.Float:
@@ -111,7 +113,7 @@ namespace SteamMultiplayer
         private static AnimatorControllerParameter ToParameter(MyAniationParamterMessage m)
         {
             var p = new AnimatorControllerParameter
-            {
+            {   name = m.name,
                 defaultBool = m._bool,
                 defaultFloat = m._float,
                 defaultInt = m._int
@@ -150,18 +152,23 @@ namespace SteamMultiplayer
             for (var i = 0; i < animator.parameters.Length; i++)
             {
                 AnimatorControllerParameter acp = ToParameter(x[i]);
+                Debug.Log("参数数据："+acp.type) ;
                 switch (acp.type)
                 {
                     case AnimatorControllerParameterType.Int:
+
                         int num = acp.defaultInt;
+                        Debug.Log("设置参数：" + acp.name+"=>"+ num);
                         animator.SetInteger(acp.name, num);
                         break;
                     case AnimatorControllerParameterType.Float:
                         float rel = acp.defaultFloat;
+                        Debug.Log("设置参数：" + acp.name + "=>" + rel);
                         animator.SetFloat(acp.name, rel);
                         break;
                     case AnimatorControllerParameterType.Bool:
                         bool boolen = acp.defaultBool;
+                        Debug.Log("设置参数：" + acp.name + "=>" + boolen);
                         animator.SetBool(acp.name, boolen);
                         break;
                     case AnimatorControllerParameterType.Trigger:
