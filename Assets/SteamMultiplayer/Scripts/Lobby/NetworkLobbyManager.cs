@@ -117,7 +117,7 @@ public class NetworkLobbyManager : MonoBehaviour {
         lobby = new CSteamID();
         foreach (var t in SMC.instance.OnlineObjects)
         {
-            if(t.DestoryOnQuit)if(t.host==SMC.SelfID)Destroy(t.gameObject);
+            if (t != null) if (t.DestoryOnQuit) if (t.host == SMC.SelfID) Destroy(t.gameObject);
         }
         if (events.lobby_leaved != null) events.lobby_leaved.Invoke();
     }

@@ -23,10 +23,23 @@ namespace SteamMultiplayer
             public int stateHash;
             public float normalizedTime;
 
-            public MyAniationMessage(int num, float num2)
+            public MyAniationParamterMessage[] paramters;
+
+            public MyAniationMessage(MyAniationParamterMessage[] p,Animator a)
             {
-                stateHash = num;
-                normalizedTime = num2;
+                paramters = p;
+                if (a.IsInTransition(0))
+                {
+                    AnimatorStateInfo nextAnimatorStateInfo = a.GetNextAnimatorStateInfo(0);
+                    stateHash = nextAnimatorStateInfo.fullPathHash;
+                    normalizedTime = nextAnimatorStateInfo.normalizedTime;
+                }
+                else
+                {
+                    AnimatorStateInfo nextAnimatorStateInfo = a.GetCurrentAnimatorStateInfo(0);
+                    stateHash = nextAnimatorStateInfo.fullPathHash;
+                    normalizedTime = nextAnimatorStateInfo.normalizedTime;
+                }
             }
         }
         [Serializable]
@@ -37,11 +50,11 @@ namespace SteamMultiplayer
             public bool _bool;
             public int type;
 
-            public MyAniationParamterMessage(AnimatorControllerParameter p)
+            public MyAniationParamterMessage(AnimatorControllerParameter p,Animator a)
             {
-                _int = p.defaultInt;
-                _float = p.defaultFloat;
-                _bool = p.defaultBool;
+                _int = a.GetInteger(p.nameHash);
+                _float = a.GetFloat(p.nameHash);
+                _bool = a.GetBool(p.nameHash);
                 switch (p.type)
                 {
                     case AnimatorControllerParameterType.Float:
@@ -64,6 +77,7 @@ namespace SteamMultiplayer
 
         private bool CheckAnimStateChanged(out int state_hash, out float normalized_time)
         {
+            Debug.Log(animator.IsInTransition(0));
             state_hash = 0;
             normalized_time = 0f;
             if (animator.IsInTransition(0))
@@ -90,7 +104,7 @@ namespace SteamMultiplayer
         {
             var p = animator.parameters;
             var o = new MyAniationParamterMessage[p.Length];
-            for (var i = 0; i < p.Length; i++) o[i] = new MyAniationParamterMessage(p[i]);
+            for (var i = 0; i < p.Length; i++) o[i] = new MyAniationParamterMessage(p[i], animator);
             return o;
         }
 
@@ -122,29 +136,54 @@ namespace SteamMultiplayer
 
         public void SetAnimState(MyAniationMessage msg)
         {
+            Debug.Log("收到包：ADState");
+            SetParamter(msg.paramters);
             if (identity.IsLocalSpawned) return;
             if (msg.stateHash == 0) return;
+            Debug.Log("实现包：ADState" + msg.normalizedTime);
             animator.Play(msg.stateHash, 0, msg.normalizedTime);
         }
 
         public void SetParamter(MyAniationParamterMessage[] x)
         {
+            Debug.Log("收到包：ADParamter");
             for (var i = 0; i < animator.parameters.Length; i++)
-                animator.parameters[i] = ToParameter(x[i]);
+            {
+                AnimatorControllerParameter acp = ToParameter(x[i]);
+                switch (acp.type)
+                {
+                    case AnimatorControllerParameterType.Int:
+                        int num = acp.defaultInt;
+                        animator.SetInteger(acp.nameHash, num);
+                        break;
+                    case AnimatorControllerParameterType.Float:
+                        float rel = acp.defaultFloat;
+                        animator.SetFloat(acp.nameHash, rel);
+                        break;
+                    case AnimatorControllerParameterType.Bool:
+                        bool boolen = acp.defaultBool;
+                        animator.SetBool(acp.nameHash, boolen);
+                        break;
+                }
+            }
+                //animator.parameters[i] = ToParameter(x[i]);
+            //Debug.Log("ADParamter" + animator.parameters[0].defaultBool);
         }
 
         public void Update()
         {
-            if(animator==null)return;
+            if (animator == null) return;
+            if (!identity.IsLocalSpawned) return;
             CurrentTime -= Time.deltaTime;
             if (!(CurrentTime <= 0)) return;
-            CurrentTime = TimesPerSecond;
+            CurrentTime = 1 / TimesPerSecond;
             int num;
             float num2;
-            if (!this.CheckAnimStateChanged(out num, out num2)) return;
-            var msg = new MyAniationMessage(num, num2);
+            if (!CheckAnimStateChanged(out num, out num2)) return;
+            var msg = new MyAniationMessage(GetParamter(), animator);
+            Debug.Log("发送包：AD");
             SMC.SendPacketsQuicklly(new P2PPackage(msg, P2PPackageType.AnimatorState, identity), false);
-            SMC.SendPacketsQuicklly(new P2PPackage(GetParamter(), P2PPackageType.AnimatorParamter, identity), false);
+            //SMC.SendPacketsQuicklly(new P2PPackage(GetParamter(), P2PPackageType.AnimatorParamter, identity), false);
         }
 
     }
