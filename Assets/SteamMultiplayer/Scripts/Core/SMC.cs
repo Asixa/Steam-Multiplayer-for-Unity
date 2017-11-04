@@ -112,13 +112,10 @@ namespace SteamMultiplayer
         {
             if (LobbyPanel.instance.lobby_room.Player_List == null)
                 LobbyPanel.instance.lobby_room.Player_List = new List<PlayerListPrefab>();
-            else
-            {
                 foreach (var t in LobbyPanel.instance.lobby_room.Player_List)
                 {
                     Destroy(t);
                 }
-            }
 
             foreach (var player in PlayerList)
             {
@@ -127,6 +124,7 @@ namespace SteamMultiplayer
                 StartCoroutine(_FetchAcatar(player, one.Icon));
                 one.transform.parent = LobbyPanel.instance.lobby_room.PlayerListPanel;
                 one.gameObject.SetActive(true);
+                LobbyPanel.instance.lobby_room.Player_List.Add(one);
             }
         }
 
@@ -184,6 +182,7 @@ namespace SteamMultiplayer
                     break;
                 case P2PPackageType.JunkData:
                     Debug.Log("收到垃圾信息");
+                    if(NetworkLobbyManager.instance.lobby.m_SteamID==0)break;
                     if (!PlayerList.Contains(steamid))
                     {
                         PlayerList.Add(steamid);
