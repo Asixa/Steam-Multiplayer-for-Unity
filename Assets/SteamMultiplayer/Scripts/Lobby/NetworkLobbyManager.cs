@@ -112,6 +112,7 @@ public class NetworkLobbyManager : MonoBehaviour {
     public void LeaveLobby()
     {
         SendChatMessage(SteamFriends.GetPersonaName() + " Lefted the Lobby", false);
+        SMC.SendPacketsSafely(new P2PPackage(null,P2PPackageType.LeftLobby),false);
         SteamMatchmaking.LeaveLobby(lobby);
         if (events.lobby_leaved != null) events.lobby_leaved.Invoke();
     }

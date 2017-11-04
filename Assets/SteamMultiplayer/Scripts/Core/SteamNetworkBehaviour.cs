@@ -41,7 +41,8 @@ namespace SteamMultiplayer
         RPC,
         Custom,
         AnimatorState,
-        AnimatorParamter
+        AnimatorParamter,
+        LeftLobby
     }
     [Serializable]
     public struct P2PPackage

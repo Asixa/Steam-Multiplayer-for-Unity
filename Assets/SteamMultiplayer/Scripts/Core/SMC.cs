@@ -100,6 +100,7 @@ namespace SteamMultiplayer
             if (JunkPackagetime <= 0)
             {
                 JunkPackagetime = 1 / 8;
+                if(NetworkLobbyManager.instance.lobby.m_SteamID!=0)
                 SendPackets(new P2PPackage(null,P2PPackageType.JunkData), EP2PSend.k_EP2PSendUnreliable, false);
             }
 
@@ -132,18 +133,22 @@ namespace SteamMultiplayer
         // Analyze and run the P2Ppackage
         private static void DecodeP2PCode(P2PPackage package, CSteamID steamid)
         {
-            if (package.Object_identity != -1)
+            if (package.type != P2PPackageType.Instantiate)
             {
-                while (instance.OnlineObjects.Count <= package.Object_identity)
+                if (package.Object_identity != -1)
                 {
-                    instance.OnlineObjects.Add(null);
-                }
-                if (instance.OnlineObjects[package.Object_identity] == null)
-                {
-                    var obj2 = Instantiate(
-                        NetworkLobbyManager.instance.SpawnablePrefab[package.ObjectSpawnID]);
-                    obj2.TargetID = package.Object_identity;
-                    obj2.Init();
+                    while (instance.OnlineObjects.Count <= package.Object_identity)
+                    {
+                        instance.OnlineObjects.Add(null);
+                    }
+                    if (instance.OnlineObjects[package.Object_identity] == null)
+                    {
+                        var obj2 = Instantiate(
+                            NetworkLobbyManager.instance.SpawnablePrefab[package.ObjectSpawnID]);
+                        obj2.TargetID = package.Object_identity;
+                        obj2.host = steamid;
+                        obj2.Init();
+                    }
                 }
             }
             switch (package.type)
@@ -174,6 +179,7 @@ namespace SteamMultiplayer
                         NetworkLobbyManager.instance.SpawnablePrefab[info.SpawnID],
                         Lib.To_Vector3(info.pos), Lib.To_Quaternion(info.rot));
                     obj.TargetID = package.Object_identity;
+                    obj.host = steamid;
                     obj.Init(); 
                     break;
                 case P2PPackageType.JunkData:
@@ -225,6 +231,20 @@ namespace SteamMultiplayer
                     break;
                 case P2PPackageType.AnimatorParamter:
                     instance.OnlineObjects[package.Object_identity].anim.SetParamter((SteamAnimator.MyAniationParamterMessage[])package.value);
+                    break;
+                case P2PPackageType.LeftLobby:
+                    if (PlayerList.Contains(steamid))
+                    {
+                        PlayerList.Remove(steamid);
+                    }
+                    foreach (var t in instance.OnlineObjects)
+                    {
+                        if (!t.DestoryOnQuit)continue;
+                        if (t.host == steamid)
+                        {
+                            Destroy(t.gameObject);
+                        }
+                    }
                     break;
                 default:
                 {

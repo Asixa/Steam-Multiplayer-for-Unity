@@ -4,6 +4,7 @@
 //最新修改 Asixa 2017-10-29
 //=============================================
 
+using Steamworks;
 using UnityEngine;
 
 namespace SteamMultiplayer
@@ -18,6 +19,8 @@ namespace SteamMultiplayer
         public SteamSync sync;
         public SteamRPC rpc;
         public SteamAnimator anim;
+        public bool DestoryOnQuit;
+        public CSteamID host;
 
         public void Init()
         {

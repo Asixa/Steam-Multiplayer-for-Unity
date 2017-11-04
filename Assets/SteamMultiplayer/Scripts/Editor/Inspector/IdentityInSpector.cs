@@ -18,5 +18,6 @@ public class IdentityInspector : Editor
         EditorGUILayout.BeginVertical("box");
         EditorGUILayout.LabelField(content);
         EditorGUILayout.EndVertical();
+        identity.DestoryOnQuit = EditorGUILayout.Toggle("Destory On Quit", identity.DestoryOnQuit);
     }
 }
