@@ -441,7 +441,7 @@ namespace SteamMultiplayer
         {
             SendPackets(new P2PPackage(new SendMessageInfo(funcName,values),P2PPackageType.SendMessage), EP2PSend.k_EP2PSendReliable);
         }
-
+        [Serializable]
         public struct RPCInfo
         {
             public int FuncIndex;
