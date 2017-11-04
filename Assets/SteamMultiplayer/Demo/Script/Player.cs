@@ -37,6 +37,7 @@ public class Player : SteamNetworkBehaviour
 
     public void ChangeColor(int id)
     {
+        print("改变颜色："+id);
         so_renderer.color = colors[currentColor];
     }
 	

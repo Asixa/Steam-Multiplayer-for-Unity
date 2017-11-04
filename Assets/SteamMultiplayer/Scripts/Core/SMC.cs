@@ -218,7 +218,7 @@ namespace SteamMultiplayer
                     break;
                 case P2PPackageType.RPC:
                     var callInfo = (RPCInfo) package.value;
-                    print("RPC  "+package.Object_identity);
+                    print("RPC  "+package.Object_identity+"  "+callInfo.Values.Length+"  "+(int)callInfo.Values[0]);
                     instance.OnlineObjects[package.Object_identity].rpc.Call(callInfo.FuncIndex,callInfo.Values);
                     break;
                 case P2PPackageType.Custom:
