@@ -56,7 +56,7 @@ namespace SteamMultiplayer
                 _int = a.GetInteger(p.nameHash);
                 _float = a.GetFloat(p.nameHash);
                 _bool = a.GetBool(p.nameHash);
-                name = a.name;
+                name = p.name;
                 switch (p.type)
                 {
                     case AnimatorControllerParameterType.Float:
