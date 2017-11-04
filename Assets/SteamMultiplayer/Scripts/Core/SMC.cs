@@ -329,6 +329,7 @@ namespace SteamMultiplayer
 
         private static void SendPacketsToAll(byte[] data, EP2PSend send, bool IncludeSelf)
         {
+            if(NetworkLobbyManager.instance.lobby.m_SteamID==0)return;
             foreach (var item in PlayerList)
             {
                 if (!IncludeSelf && item == SelfID) continue;
@@ -377,6 +378,7 @@ namespace SteamMultiplayer
             var obj = Instantiate(NetworkLobbyManager.instance.SpawnablePrefab[id.SpawnID]);
             obj.IsLocalSpawned = true;
             obj.TargetID = instance.OnlineObjects.Count;
+            obj.host = SelfID;
             obj.Init();
 
             SendPackets(
