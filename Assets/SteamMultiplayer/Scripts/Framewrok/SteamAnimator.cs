@@ -12,8 +12,9 @@ namespace SteamMultiplayer
         private int transition_hash;
         private int animation_hash;
 
-        public void Awake()
+        public new void Awake()
         {
+            base.Awake();
             GetComponent<Identity>().anim = this;
         }
         [Serializable]
