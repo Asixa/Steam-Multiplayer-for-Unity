@@ -136,8 +136,8 @@ namespace SteamMultiplayer
 
         public void SetAnimState(MyAniationMessage msg)
         {
-            Debug.Log("收到包：ADState");
-            SetParamter(msg.paramters);
+           // Debug.Log("收到包：ADState");
+            //SetParamter(msg.paramters);
             if (identity.IsLocalSpawned) return;
             if (msg.stateHash == 0) return;
             Debug.Log("实现包：ADState" + msg.normalizedTime);
@@ -154,16 +154,21 @@ namespace SteamMultiplayer
                 {
                     case AnimatorControllerParameterType.Int:
                         int num = acp.defaultInt;
-                        animator.SetInteger(acp.nameHash, num);
+                        animator.SetInteger(acp.name, num);
                         break;
                     case AnimatorControllerParameterType.Float:
                         float rel = acp.defaultFloat;
-                        animator.SetFloat(acp.nameHash, rel);
+                        animator.SetFloat(acp.name, rel);
                         break;
                     case AnimatorControllerParameterType.Bool:
                         bool boolen = acp.defaultBool;
-                        animator.SetBool(acp.nameHash, boolen);
+                        animator.SetBool(acp.name, boolen);
                         break;
+                    case AnimatorControllerParameterType.Trigger:
+                        animator.SetTrigger(acp.name);
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException();
                 }
             }
                 //animator.parameters[i] = ToParameter(x[i]);
@@ -177,13 +182,15 @@ namespace SteamMultiplayer
             CurrentTime -= Time.deltaTime;
             if (!(CurrentTime <= 0)) return;
             CurrentTime = 1 / TimesPerSecond;
+
+            SMC.SendPacketsQuicklly(new P2PPackage(GetParamter(), P2PPackageType.AnimatorParamter, identity), false);
             int num;
             float num2;
             if (!CheckAnimStateChanged(out num, out num2)) return;
             var msg = new MyAniationMessage(GetParamter(), animator);
-            Debug.Log("发送包：AD");
+            //Debug.Log("发送包：AD");
             SMC.SendPacketsQuicklly(new P2PPackage(msg, P2PPackageType.AnimatorState, identity), false);
-            //SMC.SendPacketsQuicklly(new P2PPackage(GetParamter(), P2PPackageType.AnimatorParamter, identity), false);
+            
         }
 
     }
