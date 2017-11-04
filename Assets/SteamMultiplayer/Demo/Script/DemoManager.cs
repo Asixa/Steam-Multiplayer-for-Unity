@@ -7,6 +7,7 @@ public class DemoManager : MonoBehaviour
     public Transform point;
     public void SpawnPlayer()
     {
-        SMC.instance.Spawn(Player, point.position, point.rotation);
+        var player = SMC.instance.Spawn(Player, point.position, point.rotation) as Identity;
+        player.transform.position = point.position;
     }
 }
