@@ -24,7 +24,7 @@ namespace SteamMultiplayer
 
         public void rpcCall(int funcIndex, params object[] values)
         {
-            SMC.SendPackets(new P2PPackage(new SMC.RPCInfo(funcIndex, values), P2PPackageType.RPC,identity), EP2PSend.k_EP2PSendReliable,false);
+            SMC.SendPackets(new P2PPackage(new SMC.RPCInfo(funcIndex, values), P2PPackageType.RPC,identity), EP2PSend.k_EP2PSendReliable);
         }
     }
 

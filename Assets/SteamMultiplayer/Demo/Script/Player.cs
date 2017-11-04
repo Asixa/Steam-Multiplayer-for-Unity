@@ -24,9 +24,12 @@ public class Player : SteamNetworkBehaviour
 
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.R))
+        if (identity.IsLocalSpawned)
         {
-            rpcCall(0);
+            if (Input.GetKeyDown(KeyCode.R))
+            {
+                rpcCall(0);
+            }
         }
     }
 
