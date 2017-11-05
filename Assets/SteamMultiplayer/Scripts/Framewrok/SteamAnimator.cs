@@ -157,11 +157,11 @@ namespace SteamMultiplayer
                 var acp = x[i];
                 switch (acp.type)
                 {
-                    case 1:
+                    case 3:
                         var num = acp._int;
                         animator.SetInteger(acp.name, num);
                         break;
-                    case 3:
+                    case 1:
                         var rel = acp._float;
                         animator.SetFloat(acp.name, rel);
                         break;
