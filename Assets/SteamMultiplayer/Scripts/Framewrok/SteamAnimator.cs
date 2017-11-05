@@ -109,34 +109,36 @@ namespace SteamMultiplayer
             return o;
         }
 
-        private static AnimatorControllerParameter ToParameter(MyAniationParamterMessage m)
-        {
-            var p = new AnimatorControllerParameter
-            {
-                name = m.name,
-                defaultBool = m._bool,
-                defaultFloat = m._float,
-                defaultInt = m._int
-            };
-            switch (m.type)
-            {
-                case 1:
-                    p.type = AnimatorControllerParameterType.Float;
-                    break;
-                case 3:
-                    p.type = AnimatorControllerParameterType.Int;
-                    break;
-                case 4:
-                    p.type = AnimatorControllerParameterType.Bool;
-                    break;
-                case 9:
-                    p.type = AnimatorControllerParameterType.Trigger;
-                    break;
-                default:
-                    break;
-            }
-            return p;
-        }
+        //private static AnimatorControllerParameter ToParameter(MyAniationParamterMessage m)
+        //{
+        //    var p = new AnimatorControllerParameter
+        //    {
+        //        name = m.name,
+        //        defaultBool = m._bool,
+        //        defaultFloat = m._float,
+        //        defaultInt = m._int
+        //    };
+            
+            
+        //    switch (m.type)
+        //    {
+        //        case 1:
+        //            p.type = AnimatorControllerParameterType.Float;
+        //            break;
+        //        case 3:
+        //            p.type = AnimatorControllerParameterType.Int;
+        //            break;
+        //        case 4:
+        //            p.type = AnimatorControllerParameterType.Bool;
+        //            break;
+        //        case 9:
+        //            p.type = AnimatorControllerParameterType.Trigger;
+        //            break;
+        //        default:
+        //            break;
+        //    }
+        //    return p;
+        //}
         #endregion
 
         #region SetData
@@ -152,22 +154,22 @@ namespace SteamMultiplayer
         {
             for (var i = 0; i < animator.parameters.Length; i++)
             {
-                var acp = ToParameter(x[i]);
+                var acp = x[i];
                 switch (acp.type)
                 {
-                    case AnimatorControllerParameterType.Int:
-                        var num = acp.defaultInt;
+                    case 1:
+                        var num = acp._int;
                         animator.SetInteger(acp.name, num);
                         break;
-                    case AnimatorControllerParameterType.Float:
-                        var rel = acp.defaultFloat;
+                    case 3:
+                        var rel = acp._float;
                         animator.SetFloat(acp.name, rel);
                         break;
-                    case AnimatorControllerParameterType.Bool:
-                        var boolen = acp.defaultBool;
+                    case 4:
+                        var boolen = acp._bool;
                         animator.SetBool(acp.name, boolen);
                         break;
-                    case AnimatorControllerParameterType.Trigger:
+                    case 9:
                         animator.SetTrigger(acp.name);
                         break;
                     default:
