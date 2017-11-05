@@ -115,13 +115,16 @@ namespace SteamMultiplayer
                 LobbyPanel.instance.lobby_room.Player_List = new List<PlayerListPrefab>();
                 foreach (var t in LobbyPanel.instance.lobby_room.Player_List)
                 {
-                    Destroy(t);
+                    Destroy(t.gameObject);
                 }
+                LobbyPanel.instance.lobby_room.Player_List.Clear();
 
             foreach (var player in PlayerList)
             {
                 var one = Instantiate(LobbyPanel.instance.lobby_room.PlayerListPrefab);
-                one.Name.text = SteamFriends.GetPlayerNickname(player);
+                one.Name.text = SteamFriends.GetFriendPersonaName(player);
+                              
+                print("玩家列表："+ SteamFriends.GetFriendPersonaName(player));
                 StartCoroutine(_FetchAcatar(player, one.Icon));
                 one.transform.parent = LobbyPanel.instance.lobby_room.PlayerListPanel;
                 one.gameObject.SetActive(true);
