@@ -143,11 +143,8 @@ namespace SteamMultiplayer
 
         public void SetAnimState(MyAniationMessage msg)
         {
-            // Debug.Log("收到包：ADState");
-            //SetParamter(msg.paramters);
             if (identity.IsLocalSpawned) return;
             if (msg.stateHash == 0) return;
-            //Debug.Log("实现包：ADState" + msg.normalizedTime);
             animator.Play(msg.stateHash, 0, msg.normalizedTime);
         }
 
@@ -182,7 +179,6 @@ namespace SteamMultiplayer
 
         private bool CheckAnimStateChanged(out int state_hash, out float normalized_time)
         {
-            Debug.Log(animator.IsInTransition(0));
             state_hash = 0;
             normalized_time = 0f;
             if (animator.IsInTransition(0))

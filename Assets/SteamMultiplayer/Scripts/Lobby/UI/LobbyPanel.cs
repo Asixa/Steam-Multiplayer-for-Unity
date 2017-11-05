@@ -1,8 +1,6 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using System;
-using UnityEngine.Networking;
 using UnityEngine.UI;
 
 public class LobbyPanel : MonoBehaviour
@@ -13,7 +11,6 @@ public class LobbyPanel : MonoBehaviour
     {
         public GameObject Lobbylist;
     }
-    [Layout]
     public LobbyList lobby_list;
 
     [Serializable]
@@ -27,10 +24,10 @@ public class LobbyPanel : MonoBehaviour
         public PlayerListPrefab PlayerListPrefab;
         public List<PlayerListPrefab> Player_List;
     }
-    [Layout]
+
     public LobbyRoom lobby_room;
 
-    void Awake()
+    private void Awake()
     {
         instance = this;
     }
@@ -40,20 +37,20 @@ public class LobbyPanel : MonoBehaviour
         init();
     }
 
-    void init()
+    public void init()
     {
         NetworkLobbyManager.instance.lobby_chat_msg_recevied += UpdateChatPanel;
         NetworkLobbyManager.instance.events.lobby_joined.AddListener(LobbyJoined);
         NetworkLobbyManager.instance.events.lobby_leaved.AddListener(LobbyLeaved);
     }
 
-    void LobbyJoined()
+    private void LobbyJoined()
     {
         lobby_room.lobby_room.SetActive(true);
         lobby_list.Lobbylist.SetActive(false);
     }
 
-    void LobbyLeaved()
+    private void LobbyLeaved()
     {
         foreach (var t in lobby_room.Player_List)
         {

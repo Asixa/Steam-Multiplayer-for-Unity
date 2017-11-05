@@ -11,9 +11,9 @@ public class Player : SteamNetworkBehaviour
     public SpriteRenderer so_renderer;
     public List<Color32> colors;
 
-    private int currentColor;
+    private int current_color;
 	// Use this for initialization
-	void Start () {
+    private void Start () {
 
 	    if (!identity.IsLocalSpawned)
 	    {
@@ -22,22 +22,21 @@ public class Player : SteamNetworkBehaviour
 	    }
 	}
 
-    void Update()
+    private void Update()
     {
         if (identity.IsLocalSpawned)
         {
             if (Input.GetKeyDown(KeyCode.R))
             {
-                if (currentColor < 2) currentColor++;
-                else currentColor = 0;
-                rpcCall(0,currentColor);
+                if (current_color < 2) current_color++;
+                else current_color = 0;
+                rpcCall(0,current_color);
             }
         }
     }
 
     public void ChangeColor(int id)
     {
-        print("改变颜色："+id);
         so_renderer.color = colors[id];
     }
 	

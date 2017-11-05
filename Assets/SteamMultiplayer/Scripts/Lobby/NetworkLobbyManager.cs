@@ -118,8 +118,10 @@ public class NetworkLobbyManager : MonoBehaviour {
 
         foreach (var t in SMC.instance.OnlineObjects)
         {
-            if (t != null) if (t.DestoryOnQuit) if (t.host == SMC.SelfID) Destroy(t.gameObject);
+            if (t == null) continue;
+            Destroy(t.gameObject);
         }
+        SMC.instance.OnlineObjects.Clear();
         if (events.lobby_leaved != null) events.lobby_leaved.Invoke();
     }
 
@@ -156,27 +158,23 @@ public class NetworkLobbyManager : MonoBehaviour {
     #endregion
 
     #region CallBacks
-    void OnLobbyChatUpdate(LobbyChatUpdate_t pCallback)
+
+    public void OnLobbyChatUpdate(LobbyChatUpdate_t pCallback)
     {
-   //     Debug.Log("[" + LobbyChatUpdate_t.k_iCallback + " - LobbyChatUpdate] - " + pCallback.m_ulSteamIDLobby + " -- " + pCallback.m_ulSteamIDUserChanged + " -- " + pCallback.m_ulSteamIDMakingChange + " -- " + pCallback.m_rgfChatMemberStateChange);
     }
 
-    void OnLobbyChatMsg(LobbyChatMsg_t pCallback)
+    private void OnLobbyChatMsg(LobbyChatMsg_t pCallback)
     {
-
-        // Debug.Log("[" + LobbyChatMsg_t.k_iCallback + " - LobbyChatMsg] - " + pCallback.m_ulSteamIDLobby + " -- " + pCallback.m_ulSteamIDUser + " -- " + pCallback.m_eChatEntryType + " -- " + pCallback.m_iChatID);
         CSteamID SteamIDUser;
         var Data = new byte[4096];
         EChatEntryType ChatEntryType;
         var ret = SteamMatchmaking.GetLobbyChatEntry((CSteamID)pCallback.m_ulSteamIDLobby, (int)pCallback.m_iChatID, out SteamIDUser, Data, Data.Length, out ChatEntryType);
-        // Debug.Log("GetLobbyChatEntry(" + (CSteamID)pCallback.m_ulSteamIDLobby + ", " + (int)pCallback.m_iChatID + ", out SteamIDUser, Data, Data.Length, out ChatEntryType) : " + ret + " -- " + SteamIDUser + " -- " + System.Text.Encoding.UTF8.GetString(Data) + " -- " + ChatEntryType);
 
         chatstring = Encoding.UTF8.GetString(Data);
-        print(chatstring);
         if (lobby_chat_msg_recevied != null) lobby_chat_msg_recevied.Invoke(chatstring);
     }
 
-    void OnLobbyCreated(LobbyCreated_t pCallbacks, bool bIOFailure)
+    private void OnLobbyCreated(LobbyCreated_t pCallbacks, bool bIOFailure)
     {
         pCallbacks.m_ulSteamIDLobby.ToString();
         lobby = new CSteamID(pCallbacks.m_ulSteamIDLobby);
@@ -184,7 +182,7 @@ public class NetworkLobbyManager : MonoBehaviour {
         JoinLobby(lobby);
     }
 
-    void OnLobbyJoined(LobbyEnter_t pCallbacks, bool bIOFailure)
+    private void OnLobbyJoined(LobbyEnter_t pCallbacks, bool bIOFailure)
     {
         SMC.CreateConnections(lobby);
         if (events.lobby_joined != null) events.lobby_joined.Invoke();
@@ -193,8 +191,6 @@ public class NetworkLobbyManager : MonoBehaviour {
     #endregion
 
     #region Unity Events
-  //  public delegate void LobbyEvent();
-
     [Serializable]
     public struct LobbyEvents
     {

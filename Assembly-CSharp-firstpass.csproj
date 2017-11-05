@@ -123,11 +123,6 @@
      <Compile Include="Assets\Plugins\Steamworks.NET\types\SteamUnifiedMessages\ClientUnifiedMessageHandle.cs" />
      <Compile Include="Assets\Plugins\Steamworks.NET\types\SteamUserStats\SteamLeaderboardEntries_t.cs" />
      <Compile Include="Assets\Plugins\Steamworks.NET\types\SteamUserStats\SteamLeaderboard_t.cs" />
-     <Compile Include="Assets\Standard Assets\2D\Scripts\Camera2DFollow.cs" />
-     <Compile Include="Assets\Standard Assets\2D\Scripts\CameraFollow.cs" />
-     <Compile Include="Assets\Standard Assets\2D\Scripts\Platformer2DUserControl.cs" />
-     <Compile Include="Assets\Standard Assets\2D\Scripts\PlatformerCharacter2D.cs" />
-     <Compile Include="Assets\Standard Assets\2D\Scripts\Restarter.cs" />
      <None Include="Assets\Plugins\Steamworks.NET\redist\steam_appid.txt" />
  <Reference Include="UnityEngine.UI">
  <HintPath>E:/Unity/5.6/Editor/Data/UnityExtensions/Unity/GUISystem/UnityEngine.UI.dll</HintPath>

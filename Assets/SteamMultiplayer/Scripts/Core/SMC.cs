@@ -67,11 +67,6 @@ namespace SteamMultiplayer
 
         void Update()
         {
-            if (Input.GetKeyDown(KeyCode.P))
-            {
-                SteamAPI.Shutdown();
-                Debug.Log("Steam链接已关闭");
-            }
 
             if (PlayerCount != PlayerList.Count)
             {
@@ -115,6 +110,7 @@ namespace SteamMultiplayer
                 LobbyPanel.instance.lobby_room.Player_List = new List<PlayerListPrefab>();
                 foreach (var t in LobbyPanel.instance.lobby_room.Player_List)
                 {
+                    if(t!=null)
                     Destroy(t.gameObject);
                 }
                 LobbyPanel.instance.lobby_room.Player_List.Clear();
@@ -124,7 +120,6 @@ namespace SteamMultiplayer
                 var one = Instantiate(LobbyPanel.instance.lobby_room.PlayerListPrefab);
                 one.Name.text = SteamFriends.GetFriendPersonaName(player);
                               
-                print("玩家列表："+ SteamFriends.GetFriendPersonaName(player));
                 StartCoroutine(_FetchAcatar(player, one.Icon));
                 one.transform.parent = LobbyPanel.instance.lobby_room.PlayerListPanel;
                 one.gameObject.SetActive(true);
@@ -156,18 +151,6 @@ namespace SteamMultiplayer
             switch (package.type)
             {
                 case P2PPackageType.位移同步:
-                    Debug.Log("同步物体ID" + package.Object_identity);
-                    //while (instance.OnlineObjects.Count <= package.Object_identity)
-                    //{
-                    //    instance.OnlineObjects.Add(null);
-                    //}
-                    //if (instance.OnlineObjects[package.Object_identity] == null)
-                    //{
-                    //    var obj2 = Instantiate(
-                    //        NetworkLobbyManager.instance.SpawnablePrefab[package.ObjectSpawnID]);
-                    //    obj2.TargetID = package.Object_identity;
-                    //    obj2.Init();
-                    //}
                     instance.OnlineObjects[package.Object_identity].GetComponent<SynTransform>()
                         .Receive(Lib.To_Vector3((Lib.M_Vector3) package.value));
                     break;
@@ -185,7 +168,6 @@ namespace SteamMultiplayer
                     obj.Init(); 
                     break;
                 case P2PPackageType.JunkData:
-                    Debug.Log("收到垃圾信息");
                     if(NetworkLobbyManager.instance.lobby.m_SteamID==0)break;
                     if (!PlayerList.Contains(steamid))
                     {
@@ -222,7 +204,6 @@ namespace SteamMultiplayer
                     break;
                 case P2PPackageType.RPC:
                     var callInfo = (RPCInfo) package.value;
-                    print("RPC  "+package.Object_identity+"  "+callInfo.Values.Length+"  "+(int)callInfo.Values[0]);
                     instance.OnlineObjects[package.Object_identity].rpc.Call(callInfo.FuncIndex,callInfo.Values);
                     break;
                 case P2PPackageType.Custom:
@@ -337,7 +318,7 @@ namespace SteamMultiplayer
             foreach (var item in PlayerList)
             {
                 if (!IncludeSelf && item == SelfID) continue;
-                Debug.Log("向" + item.m_SteamID + "发送数据包");
+                Debug.Log("向" + SteamFriends.GetFriendPersonaName(item) + "发送数据包");
                 SteamNetworking.SendP2PPacket(item, data, (uint) data.Length, send);
             }
         }
@@ -348,7 +329,7 @@ namespace SteamMultiplayer
 
         private static void OnSocketStatusCallback(SocketStatusCallback_t pCallback)
         {
-            print(pCallback.m_steamIDRemote.m_SteamID);
+            print("OnSocketStatusCallback"+pCallback.m_steamIDRemote.m_SteamID);
         }
 
         private static void OnP2PSessionRequest(P2PSessionRequest_t pCallback)
@@ -494,9 +475,7 @@ namespace SteamMultiplayer
 
         void OnApplicationQuit()
         {
-            print("程序关闭");
             SteamAPI.Shutdown();
-
         }
     }
 }
