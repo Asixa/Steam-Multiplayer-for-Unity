@@ -186,6 +186,8 @@ namespace SteamMultiplayer
                     {
                         PlayerList.Add(steamid);
                         CreateConnection(steamid);
+                        PlayerNeedToConnect=new bool[PlayerList.Count];
+                        PlayerNeedToConnect[PlayerList.IndexOf(SelfID)] = true;
                     }
                     if (CheckingJoined)
                     {
