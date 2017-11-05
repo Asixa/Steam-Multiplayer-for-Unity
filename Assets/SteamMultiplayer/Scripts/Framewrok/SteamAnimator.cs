@@ -1,4 +1,7 @@
-﻿using System;
+﻿//*********************
+// 我牛逼不？-----Asixa
+//*********************
+using System;
 using UnityEngine;
 
 namespace SteamMultiplayer
@@ -6,17 +9,37 @@ namespace SteamMultiplayer
     [AddComponentMenu("SteamMultiplayer/Steam Sync Animator")]
     public class SteamAnimator : SteamNetworkBehaviour
     {
+        #region Variables
         public Animator animator;
         public int TimesPerSecond = 9;
         private float CurrentTime;
         private int transition_hash;
         private int animation_hash;
+        #endregion
 
+        #region Unity Reserved Functions
         public new void Awake()
         {
             base.Awake();
             GetComponent<Identity>().anim = this;
         }
+        public void Update()
+        {
+            if (animator == null) return;
+            if (!identity.IsLocalSpawned) return;
+            CurrentTime -= Time.deltaTime;
+            if (!(CurrentTime <= 0)) return;
+            CurrentTime = 1f / TimesPerSecond;
+            SMC.SendPacketsQuicklly(new P2PPackage(GetParamter(), P2PPackageType.AnimatorParamter, identity), false);
+            int num;
+            float num2;
+            if (!CheckAnimStateChanged(out num, out num2)) return;
+            var msg = new MyAniationMessage(GetParamter(), animator);
+            SMC.SendPacketsQuicklly(new P2PPackage(msg, P2PPackageType.AnimatorState, identity), false);
+        }
+        #endregion
+
+        #region Structs
         [Serializable]
         public struct MyAniationMessage
         {
@@ -76,6 +99,88 @@ namespace SteamMultiplayer
                 }
             }
         }
+        #endregion
+
+        #region GetData
+
+        public MyAniationParamterMessage[] GetParamter()
+        {
+            var p = animator.parameters;
+            var o = new MyAniationParamterMessage[p.Length];
+            for (var i = 0; i < p.Length; i++) o[i] = new MyAniationParamterMessage(p[i], animator);
+            return o;
+        }
+
+        private static AnimatorControllerParameter ToParameter(MyAniationParamterMessage m)
+        {
+            var p = new AnimatorControllerParameter
+            {
+                name = m.name,
+                defaultBool = m._bool,
+                defaultFloat = m._float,
+                defaultInt = m._int
+            };
+            switch (m.type)
+            {
+                case 1:
+                    p.type = AnimatorControllerParameterType.Float;
+                    break;
+                case 3:
+                    p.type = AnimatorControllerParameterType.Int;
+                    break;
+                case 4:
+                    p.type = AnimatorControllerParameterType.Bool;
+                    break;
+                case 9:
+                    p.type = AnimatorControllerParameterType.Trigger;
+                    break;
+                default:
+                    break;
+            }
+            return p;
+        }
+        #endregion
+
+        #region SetData
+
+        public void SetAnimState(MyAniationMessage msg)
+        {
+            // Debug.Log("收到包：ADState");
+            //SetParamter(msg.paramters);
+            if (identity.IsLocalSpawned) return;
+            if (msg.stateHash == 0) return;
+            //Debug.Log("实现包：ADState" + msg.normalizedTime);
+            animator.Play(msg.stateHash, 0, msg.normalizedTime);
+        }
+
+        public void SetParamter(MyAniationParamterMessage[] x)
+        {
+            for (var i = 0; i < animator.parameters.Length; i++)
+            {
+                var acp = ToParameter(x[i]);
+                switch (acp.type)
+                {
+                    case AnimatorControllerParameterType.Int:
+                        var num = acp.defaultInt;
+                        animator.SetInteger(acp.name, num);
+                        break;
+                    case AnimatorControllerParameterType.Float:
+                        var rel = acp.defaultFloat;
+                        animator.SetFloat(acp.name, rel);
+                        break;
+                    case AnimatorControllerParameterType.Bool:
+                        var boolen = acp.defaultBool;
+                        animator.SetBool(acp.name, boolen);
+                        break;
+                    case AnimatorControllerParameterType.Trigger:
+                        animator.SetTrigger(acp.name);
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
+            }
+        }
+        #endregion
 
         private bool CheckAnimStateChanged(out int state_hash, out float normalized_time)
         {
@@ -100,104 +205,6 @@ namespace SteamMultiplayer
             transition_hash = 0;
             animation_hash = current_animator_state_info.fullPathHash;
             return true;
-        }
-
-        public MyAniationParamterMessage[] GetParamter()
-        {
-            var p = animator.parameters;
-            var o = new MyAniationParamterMessage[p.Length];
-            for (var i = 0; i < p.Length; i++) o[i] = new MyAniationParamterMessage(p[i], animator);
-            return o;
-        }
-
-        private static AnimatorControllerParameter ToParameter(MyAniationParamterMessage m)
-        {
-            var p = new AnimatorControllerParameter
-            {   name = m.name,
-                defaultBool = m._bool,
-                defaultFloat = m._float,
-                defaultInt = m._int
-            };
-            switch (m.type)
-            {
-                case 1:
-                    p.type = AnimatorControllerParameterType.Float;
-                    break;
-                case 3:
-                    p.type = AnimatorControllerParameterType.Int;
-                    break;
-                case 4:
-                    p.type = AnimatorControllerParameterType.Bool;
-                    break;
-                case 9:
-                    p.type = AnimatorControllerParameterType.Trigger;
-                    break;
-            }
-            return p;
-        }
-
-        public void SetAnimState(MyAniationMessage msg)
-        {
-           // Debug.Log("收到包：ADState");
-            //SetParamter(msg.paramters);
-            if (identity.IsLocalSpawned) return;
-            if (msg.stateHash == 0) return;
-            //Debug.Log("实现包：ADState" + msg.normalizedTime);
-            animator.Play(msg.stateHash, 0, msg.normalizedTime);
-        }
-
-        public void SetParamter(MyAniationParamterMessage[] x)
-        {
-            //Debug.Log("收到包：ADParamter");
-            for (var i = 0; i < animator.parameters.Length; i++)
-            {
-                AnimatorControllerParameter acp = ToParameter(x[i]);
-               // Debug.Log("参数数据："+acp.type) ;
-                switch (acp.type)
-                {
-                    case AnimatorControllerParameterType.Int:
-
-                        int num = acp.defaultInt;
-                        //Debug.Log("设置参数：" + acp.name+"=>"+ num);
-                        animator.SetInteger(acp.name, num);
-                        break;
-                    case AnimatorControllerParameterType.Float:
-                        float rel = acp.defaultFloat;
-                        //Debug.Log("设置参数：" + acp.name + "=>" + rel);
-                        animator.SetFloat(acp.name, rel);
-                        break;
-                    case AnimatorControllerParameterType.Bool:
-                        bool boolen = acp.defaultBool;
-                        //Debug.Log("设置参数：" + acp.name + "=>" + boolen);
-                        animator.SetBool(acp.name, boolen);
-                        break;
-                    case AnimatorControllerParameterType.Trigger:
-                        animator.SetTrigger(acp.name);
-                        break;
-                    default:
-                        throw new ArgumentOutOfRangeException();
-                }
-            }
-                //animator.parameters[i] = ToParameter(x[i]);
-            //Debug.Log("ADParamter" + animator.parameters[0].defaultBool);
-        }
-
-        public void Update()
-        {
-            if (animator == null) return;
-            if (!identity.IsLocalSpawned) return;
-            CurrentTime -= Time.deltaTime;
-            if (!(CurrentTime <= 0)) return;
-            CurrentTime = 1 / TimesPerSecond;
-
-            SMC.SendPacketsQuicklly(new P2PPackage(GetParamter(), P2PPackageType.AnimatorParamter, identity), false);
-            int num;
-            float num2;
-            if (!CheckAnimStateChanged(out num, out num2)) return;
-            var msg = new MyAniationMessage(GetParamter(), animator);
-            //Debug.Log("发送包：AD");
-            SMC.SendPacketsQuicklly(new P2PPackage(msg, P2PPackageType.AnimatorState, identity), false);
-            
         }
 
     }

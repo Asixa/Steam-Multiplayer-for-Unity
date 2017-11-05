@@ -115,6 +115,7 @@ public class NetworkLobbyManager : MonoBehaviour {
         SMC.SendPacketsSafely(new P2PPackage(null,P2PPackageType.LeftLobby),false);
         SteamMatchmaking.LeaveLobby(lobby);
         lobby = new CSteamID();
+
         foreach (var t in SMC.instance.OnlineObjects)
         {
             if (t != null) if (t.DestoryOnQuit) if (t.host == SMC.SelfID) Destroy(t.gameObject);

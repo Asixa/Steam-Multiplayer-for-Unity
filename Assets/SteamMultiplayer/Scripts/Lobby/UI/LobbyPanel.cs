@@ -55,6 +55,14 @@ public class LobbyPanel : MonoBehaviour
 
     void LobbyLeaved()
     {
+        foreach (var t in lobby_room.Player_List)
+        {
+            if (t != null)
+            {
+                Destroy(t.gameObject);
+            }
+        }
+        
         lobby_room.lobby_room.SetActive(false);
         lobby_list.Lobbylist.SetActive(true);
     }
@@ -75,7 +83,7 @@ public class LobbyPanel : MonoBehaviour
     {
         if(history.Count==0)return;
         foreach (Text t in history)
-        {
+        {if(t!=null)
             Destroy(t.gameObject);
         }
     }
