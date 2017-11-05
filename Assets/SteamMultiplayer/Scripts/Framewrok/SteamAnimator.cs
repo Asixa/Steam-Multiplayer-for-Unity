@@ -142,33 +142,33 @@ namespace SteamMultiplayer
             //SetParamter(msg.paramters);
             if (identity.IsLocalSpawned) return;
             if (msg.stateHash == 0) return;
-            Debug.Log("实现包：ADState" + msg.normalizedTime);
+            //Debug.Log("实现包：ADState" + msg.normalizedTime);
             animator.Play(msg.stateHash, 0, msg.normalizedTime);
         }
 
         public void SetParamter(MyAniationParamterMessage[] x)
         {
-            Debug.Log("收到包：ADParamter");
+            //Debug.Log("收到包：ADParamter");
             for (var i = 0; i < animator.parameters.Length; i++)
             {
                 AnimatorControllerParameter acp = ToParameter(x[i]);
-                Debug.Log("参数数据："+acp.type) ;
+               // Debug.Log("参数数据："+acp.type) ;
                 switch (acp.type)
                 {
                     case AnimatorControllerParameterType.Int:
 
                         int num = acp.defaultInt;
-                        Debug.Log("设置参数：" + acp.name+"=>"+ num);
+                        //Debug.Log("设置参数：" + acp.name+"=>"+ num);
                         animator.SetInteger(acp.name, num);
                         break;
                     case AnimatorControllerParameterType.Float:
                         float rel = acp.defaultFloat;
-                        Debug.Log("设置参数：" + acp.name + "=>" + rel);
+                        //Debug.Log("设置参数：" + acp.name + "=>" + rel);
                         animator.SetFloat(acp.name, rel);
                         break;
                     case AnimatorControllerParameterType.Bool:
                         bool boolen = acp.defaultBool;
-                        Debug.Log("设置参数：" + acp.name + "=>" + boolen);
+                        //Debug.Log("设置参数：" + acp.name + "=>" + boolen);
                         animator.SetBool(acp.name, boolen);
                         break;
                     case AnimatorControllerParameterType.Trigger:

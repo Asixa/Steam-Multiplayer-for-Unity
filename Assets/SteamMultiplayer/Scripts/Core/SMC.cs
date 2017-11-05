@@ -91,6 +91,7 @@ namespace SteamMultiplayer
                 var package = (P2PPackage) new BinaryFormatter().Deserialize(new MemoryStream(data));
                 Debug.Log("从 " + SteamFriends.GetFriendPersonaName(remoteId) + " 收到包" + package.type + " ID " +
                           package.Object_identity);
+                if(NetworkLobbyManager.instance.lobby.m_SteamID!=0)
                 DecodeP2PCode(package, remoteId);
             }
 
