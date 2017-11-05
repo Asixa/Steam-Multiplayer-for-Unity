@@ -181,6 +181,7 @@ namespace SteamMultiplayer
                     break;
                 case P2PPackageType.JunkData:
                     if(NetworkLobbyManager.instance.lobby.m_SteamID==0)break;
+                    Debug.Log("從 "+SteamFriends.GetFriendPersonaName(steamid)+" 收到Junkdata");
                     if (!PlayerList.Contains(steamid))
                     {
                         PlayerList.Add(steamid);
