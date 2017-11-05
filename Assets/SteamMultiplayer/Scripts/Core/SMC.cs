@@ -109,7 +109,11 @@ namespace SteamMultiplayer
                 {
                     if (!t) ready = false;
                 }
-                if (ready) events.JoinedLobby.Invoke();
+                if (ready)
+                {
+                    events.JoinedLobby.Invoke();
+                    CheckingJoined = false;
+                }
             }
 
         }
@@ -186,8 +190,8 @@ namespace SteamMultiplayer
                     {
                         PlayerList.Add(steamid);
                         CreateConnection(steamid);
-                        PlayerNeedToConnect=new bool[PlayerList.Count];
-                        PlayerNeedToConnect[PlayerList.IndexOf(SelfID)] = true;
+                        //PlayerNeedToConnect=new bool[PlayerList.Count];
+                        //PlayerNeedToConnect[PlayerList.IndexOf(SelfID)] = true;
                     }
                     if (CheckingJoined)
                     {
