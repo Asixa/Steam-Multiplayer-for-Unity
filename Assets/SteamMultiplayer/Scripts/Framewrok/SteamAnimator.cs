@@ -34,7 +34,7 @@ namespace SteamMultiplayer
             int num;
             float num2;
             if (!CheckAnimStateChanged(out num, out num2)) return;
-            var msg = new MyAniationMessage(GetParamter(), animator);
+            var msg = new MyAniationMessage( animator);
             SMC.SendPacketsQuicklly(new P2PPackage(msg, P2PPackageType.AnimatorState, identity), false);
         }
         #endregion
@@ -46,20 +46,18 @@ namespace SteamMultiplayer
             public int stateHash;
             public float normalizedTime;
 
-            public MyAniationParamterMessage[] paramters;
 
-            public MyAniationMessage(MyAniationParamterMessage[] p,Animator a)
+            public MyAniationMessage(Animator a)
             {
-                paramters = p;
                 if (a.IsInTransition(0))
                 {
-                    AnimatorStateInfo nextAnimatorStateInfo = a.GetNextAnimatorStateInfo(0);
+                    var nextAnimatorStateInfo = a.GetNextAnimatorStateInfo(0);
                     stateHash = nextAnimatorStateInfo.fullPathHash;
                     normalizedTime = nextAnimatorStateInfo.normalizedTime;
                 }
                 else
                 {
-                    AnimatorStateInfo nextAnimatorStateInfo = a.GetCurrentAnimatorStateInfo(0);
+                    var nextAnimatorStateInfo = a.GetCurrentAnimatorStateInfo(0);
                     stateHash = nextAnimatorStateInfo.fullPathHash;
                     normalizedTime = nextAnimatorStateInfo.normalizedTime;
                 }
