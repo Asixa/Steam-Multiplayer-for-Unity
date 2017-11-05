@@ -50,9 +50,6 @@ public class LobbyList : MonoBehaviour {
             Destroy(t.gameObject);
         }
 
-        //m_StatusText.text = "Found " + nLobbies + " lobbies:";
-
-      //  RectTransform itemRectT = itemPrefab.GetComponent<RectTransform>();
         RectTransform rectTransform = Container.GetComponent<RectTransform>();
         rectTransform.sizeDelta=new Vector2(rectTransform.sizeDelta.x, nLobbies * itemPrefab.GetComponent<RectTransform>().sizeDelta.y);
 
@@ -64,11 +61,6 @@ public class LobbyList : MonoBehaviour {
             m_items[i].name = gameObject.name + " item at (" + i + ")";
             m_items[i].transform.parent = Container.transform;
 
-
-            //RectTransform newRectT = m_items[i].GetComponent<RectTransform>();
-            //newRectT.SetInsetAndSizeFromParentEdge(RectTransform.Edge.Left, 0, rectTransform.rect.width);
-            //newRectT.SetInsetAndSizeFromParentEdge(RectTransform.Edge.Top, i * itemRectT.rect.height, itemRectT.rect.height);
-
             {
                 m_items[i].ID.text=i.ToString();
                 m_items[i].Name.text = SteamFriends.GetFriendPersonaName(m_Lobbies[i].m_Owner);
@@ -78,31 +70,6 @@ public class LobbyList : MonoBehaviour {
                
             }
             m_items[i].button.onClick.AddListener(delegate {
-                //m_CurrentlySelected = ThisIsDumb;
-                //System.Text.StringBuilder test = new System.Text.StringBuilder();
-                //test.Append("Lobby Data list:\n");
-                //for (int j = 0; j < m_Lobbies[m_CurrentlySelected].m_Data.Length; ++j)
-                //{
-                //    test.Append(m_Lobbies[m_CurrentlySelected].m_Data[j].m_Key);
-                //    test.Append(" - ");
-                //    test.Append(m_Lobbies[m_CurrentlySelected].m_Data[j].m_Value);
-                //    test.Append("\n");
-                //}
-
-                //test.Append("Members list:\n");
-                //for (int j = 0; j < m_Lobbies[m_CurrentlySelected].m_Members.Length; ++j)
-                //{
-                //    test.Append(j);
-                //    test.Append(". ");
-                //    test.Append(m_Lobbies[m_CurrentlySelected].m_Members[j].m_SteamID);
-                //    test.Append(" - ");
-                //    test.Append(SteamFriends.GetFriendPersonaName(m_Lobbies[m_CurrentlySelected].m_Members[j].m_SteamID));
-                //    test.Append("\n");
-                //}
-
-                //m_ServerInfoText.text = test.ToString();
-
-                //m_JoinButton.interactable = true;
             });
         }
     }
@@ -117,7 +84,7 @@ public class LobbyList : MonoBehaviour {
             return; // TODO: Recovery
         }
 
-        Debug.Log("[刷新到大厅]:" + pCallback.m_nLobbiesMatching);
+        //Debug.Log("[刷新到大厅]:" + pCallback.m_nLobbiesMatching);
 
         if (pCallback.m_nLobbiesMatching == 0)
         {

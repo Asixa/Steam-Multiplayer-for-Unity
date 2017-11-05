@@ -318,7 +318,7 @@ namespace SteamMultiplayer
             foreach (var item in PlayerList)
             {
                 if (!IncludeSelf && item == SelfID) continue;
-                Debug.Log("向" + SteamFriends.GetFriendPersonaName(item) + "发送数据包");
+                Debug.Log("向 " + SteamFriends.GetFriendPersonaName(item) + " 发送数据包");
                 SteamNetworking.SendP2PPacket(item, data, (uint) data.Length, send);
             }
         }
@@ -329,7 +329,7 @@ namespace SteamMultiplayer
 
         private static void OnSocketStatusCallback(SocketStatusCallback_t pCallback)
         {
-            print("OnSocketStatusCallback"+pCallback.m_steamIDRemote.m_SteamID);
+          //  print("OnSocketStatusCallback"+pCallback.m_steamIDRemote.m_SteamID);
         }
 
         private static void OnP2PSessionRequest(P2PSessionRequest_t pCallback)
