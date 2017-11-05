@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 using System;
+using SteamMultiplayer;
 using UnityEngine.UI;
 
 public class LobbyPanel : MonoBehaviour
@@ -23,6 +24,7 @@ public class LobbyPanel : MonoBehaviour
         public RectTransform PlayerListPanel;
         public PlayerListPrefab PlayerListPrefab;
         public List<PlayerListPrefab> Player_List;
+        public GameObject Wating;
     }
 
     public LobbyRoom lobby_room;
@@ -40,14 +42,21 @@ public class LobbyPanel : MonoBehaviour
     public void init()
     {
         NetworkLobbyManager.instance.lobby_chat_msg_recevied += UpdateChatPanel;
-        NetworkLobbyManager.instance.events.lobby_joined.AddListener(LobbyJoined);
+        NetworkLobbyManager.instance.events.lobby_just_joined.AddListener(LobbyConnecting);
         NetworkLobbyManager.instance.events.lobby_leaved.AddListener(LobbyLeaved);
+        SMC.instance.events.JoinedLobby.AddListener(LobbyJoined);
+    }
+
+    private void LobbyConnecting()
+    {
+        lobby_room.lobby_room.SetActive(true);
+        lobby_room.Wating.SetActive(true);
+        lobby_list.Lobbylist.SetActive(false);
     }
 
     private void LobbyJoined()
     {
-        lobby_room.lobby_room.SetActive(true);
-        lobby_list.Lobbylist.SetActive(false);
+        lobby_room.Wating.SetActive(false);
     }
 
     private void LobbyLeaved()

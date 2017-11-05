@@ -44,10 +44,12 @@ namespace SteamMultiplayer
 
         //Time to send junkdata
         private float JunkPackagetime = 0.1f;
-        //[Serializable]
+
+        [Serializable]
         public struct SMCEvents 
         {
             public UnityEvent<string,object> CustomPacket;
+            public UnityEvent JoinedLobby;
         }
 
         public SMCEvents events;
@@ -84,8 +86,8 @@ namespace SteamMultiplayer
                 CSteamID remoteId;
                 if (!SteamNetworking.ReadP2PPacket(data, size, out bytesRead, out remoteId)) continue;
                 var package = (P2PPackage) new BinaryFormatter().Deserialize(new MemoryStream(data));
-                Debug.Log("从 " + SteamFriends.GetFriendPersonaName(remoteId) + " 收到包" + package.type + " ID " +
-                          package.Object_identity);
+                //Debug.Log("从 " + SteamFriends.GetFriendPersonaName(remoteId) + " 收到包" + package.type + " ID " +
+                //          package.Object_identity);
                 if(NetworkLobbyManager.instance.lobby.m_SteamID!=0)
                 DecodeP2PCode(package, remoteId);
             }
@@ -98,6 +100,16 @@ namespace SteamMultiplayer
                 JunkPackagetime = 1 / 8;
                 if(NetworkLobbyManager.instance.lobby.m_SteamID!=0)
                 SendPackets(new P2PPackage(null,P2PPackageType.JunkData), EP2PSend.k_EP2PSendUnreliable, false);
+            }
+
+            if (CheckingJoined)
+            {
+                var ready = true;
+                foreach (var t in PlayerNeedToConnect)
+                {
+                    if (!t) ready = false;
+                }
+                if (ready) events.JoinedLobby.Invoke();
             }
 
         }
@@ -173,6 +185,14 @@ namespace SteamMultiplayer
                     {
                         PlayerList.Add(steamid);
                         CreateConnection(steamid);
+                    }
+                    if (CheckingJoined)
+                    {
+                        var index = PlayerList.IndexOf(steamid);
+                        if (!PlayerNeedToConnect[index])
+                        {
+                            PlayerNeedToConnect[index] = true;
+                        }
                     }
                     break;
                 case P2PPackageType.SendMessage:
@@ -476,6 +496,15 @@ namespace SteamMultiplayer
         void OnApplicationQuit()
         {
             SteamAPI.Shutdown();
+        }
+
+        private static bool CheckingJoined;
+        public static bool[] PlayerNeedToConnect;
+        public void CheckJoinedLobby()
+        {
+            PlayerNeedToConnect=new bool[PlayerList.Count];
+            PlayerNeedToConnect[PlayerList.IndexOf(SelfID)] = true;
+            CheckingJoined = true;
         }
     }
 }

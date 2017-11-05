@@ -55,7 +55,7 @@ public class NetworkLobbyManager : MonoBehaviour {
     public List<Identity> SpawnablePrefab = new List<Identity>();
 
     //Current Lobby
-    [HideInInspector]
+    //[HideInInspector]
     public CSteamID lobby;
 
     //SteamCallBakck
@@ -107,6 +107,7 @@ public class NetworkLobbyManager : MonoBehaviour {
     {
         this.lobby = lobby;
         CLobbyJoin.Set(SteamMatchmaking.JoinLobby(this.lobby), OnLobbyJoined);
+       
     }
 
     public void LeaveLobby()
@@ -185,8 +186,9 @@ public class NetworkLobbyManager : MonoBehaviour {
     private void OnLobbyJoined(LobbyEnter_t pCallbacks, bool bIOFailure)
     {
         SMC.CreateConnections(lobby);
-        if (events.lobby_joined != null) events.lobby_joined.Invoke();
+        if (events.lobby_just_joined != null) events.lobby_just_joined.Invoke();
         SendChatMessage(SteamFriends.GetPersonaName() + " Joined the Lobby", false);
+        SMC.instance.CheckJoinedLobby();
     }
     #endregion
 
@@ -194,7 +196,7 @@ public class NetworkLobbyManager : MonoBehaviour {
     [Serializable]
     public struct LobbyEvents
     {
-        public UnityEvent lobby_joined;
+        public UnityEvent lobby_just_joined;
         public UnityEvent lobby_created;
         public UnityEvent lobby_leaved;
     }
