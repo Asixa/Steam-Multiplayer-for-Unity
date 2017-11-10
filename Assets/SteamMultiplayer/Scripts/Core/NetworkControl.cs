@@ -89,7 +89,8 @@ namespace SteamMultiplayer
                 var package = (P2PPackage) new BinaryFormatter().Deserialize(new MemoryStream(data));
                 //Debug.Log("从 " + SteamFriends.GetFriendPersonaName(remoteId) + " 收到包" + package.type + " ID " +
                 //          package.Object_identity);
-                if(NetworkLobbyManager.instance.lobby.m_SteamID!=0)
+                Statistics.Downstream(size);
+                if (NetworkLobbyManager.instance.lobby.m_SteamID!=0)
                 Analyze(package, remoteId);
             }
 
@@ -190,7 +191,7 @@ namespace SteamMultiplayer
                     break;
                 case P2PPackageType.JunkData:
                     if(NetworkLobbyManager.instance.lobby.m_SteamID==0)break;
-                    Debug.Log("從 "+SteamFriends.GetFriendPersonaName(steamid)+" 收到Junkdata");
+                    Debug.Log("从 "+SteamFriends.GetFriendPersonaName(steamid)+" 收到Junkdata");
                     if (!PlayerList.Contains(steamid))
                     {
                         PlayerList.Add(steamid);
@@ -351,6 +352,7 @@ namespace SteamMultiplayer
             {
                 if (!IncludeSelf && item == SelfID) continue;
                 Debug.Log("向 " + SteamFriends.GetFriendPersonaName(item) + " 发送数据包");
+                Statistics.Upstream((ulong)data.Length);
                 SteamNetworking.SendP2PPacket(item, data, (uint) data.Length, send);
             }
         }
