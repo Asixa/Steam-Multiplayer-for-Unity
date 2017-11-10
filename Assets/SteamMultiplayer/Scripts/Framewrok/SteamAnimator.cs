@@ -1,7 +1,4 @@
-﻿//*********************
-// 我牛逼不？-----Asixa
-//*********************
-using System;
+﻿using System;
 using UnityEngine;
 
 namespace SteamMultiplayer
@@ -11,16 +8,15 @@ namespace SteamMultiplayer
     {
         #region Variables
         public Animator animator;
-        public int TimesPerSecond = 9;
+        public int UpdatesPerSecond = 9;
         private float CurrentTime;
         private int transition_hash;
         private int animation_hash;
         #endregion
 
         #region Unity Reserved Functions
-        public new void Awake()
+        public void Awake()
         {
-            base.Awake();
             GetComponent<Identity>().anim = this;
         }
         public void Update()
@@ -29,13 +25,13 @@ namespace SteamMultiplayer
             if (!identity.IsLocalSpawned) return;
             CurrentTime -= Time.deltaTime;
             if (!(CurrentTime <= 0)) return;
-            CurrentTime = 1f / TimesPerSecond;
-            SMC.SendPacketsQuicklly(new P2PPackage(GetParamter(), P2PPackageType.AnimatorParamter, identity), false);
+            CurrentTime = 1f / UpdatesPerSecond;
+            NetworkControl.SendPacketsQuicklly(new P2PPackage(GetParamter(), P2PPackageType.AnimatorParamter, identity), false);
             int num;
             float num2;
             if (!CheckAnimStateChanged(out num, out num2)) return;
             var msg = new MyAniationMessage( animator);
-            SMC.SendPacketsQuicklly(new P2PPackage(msg, P2PPackageType.AnimatorState, identity), false);
+            NetworkControl.SendPacketsQuicklly(new P2PPackage(msg, P2PPackageType.AnimatorState, identity), false);
         }
         #endregion
 
@@ -43,8 +39,8 @@ namespace SteamMultiplayer
         [Serializable]
         public struct MyAniationMessage
         {
-            public int stateHash;
-            public float normalizedTime;
+            public int state_hash;
+            public float normalized_time;
 
 
             public MyAniationMessage(Animator a)
@@ -52,14 +48,14 @@ namespace SteamMultiplayer
                 if (a.IsInTransition(0))
                 {
                     var nextAnimatorStateInfo = a.GetNextAnimatorStateInfo(0);
-                    stateHash = nextAnimatorStateInfo.fullPathHash;
-                    normalizedTime = nextAnimatorStateInfo.normalizedTime;
+                    state_hash = nextAnimatorStateInfo.fullPathHash;
+                    normalized_time = nextAnimatorStateInfo.normalizedTime;
                 }
                 else
                 {
                     var nextAnimatorStateInfo = a.GetCurrentAnimatorStateInfo(0);
-                    stateHash = nextAnimatorStateInfo.fullPathHash;
-                    normalizedTime = nextAnimatorStateInfo.normalizedTime;
+                    state_hash = nextAnimatorStateInfo.fullPathHash;
+                    normalized_time = nextAnimatorStateInfo.normalizedTime;
                 }
             }
         }
@@ -100,7 +96,6 @@ namespace SteamMultiplayer
         #endregion
 
         #region GetData
-
         public MyAniationParamterMessage[] GetParamter()
         {
             var p = animator.parameters;
@@ -109,45 +104,38 @@ namespace SteamMultiplayer
             return o;
         }
 
-        //private static AnimatorControllerParameter ToParameter(MyAniationParamterMessage m)
-        //{
-        //    var p = new AnimatorControllerParameter
-        //    {
-        //        name = m.name,
-        //        defaultBool = m._bool,
-        //        defaultFloat = m._float,
-        //        defaultInt = m._int
-        //    };
-            
-            
-        //    switch (m.type)
-        //    {
-        //        case 1:
-        //            p.type = AnimatorControllerParameterType.Float;
-        //            break;
-        //        case 3:
-        //            p.type = AnimatorControllerParameterType.Int;
-        //            break;
-        //        case 4:
-        //            p.type = AnimatorControllerParameterType.Bool;
-        //            break;
-        //        case 9:
-        //            p.type = AnimatorControllerParameterType.Trigger;
-        //            break;
-        //        default:
-        //            break;
-        //    }
-        //    return p;
-        //}
+        private bool CheckAnimStateChanged(out int state_hash, out float normalized_time)
+        {
+            state_hash = 0;
+            normalized_time = 0f;
+            if (animator.IsInTransition(0))
+            {
+                var animator_transition_info = animator.GetAnimatorTransitionInfo(0);
+                if (animator_transition_info.fullPathHash == transition_hash) return false;
+                transition_hash = animator_transition_info.fullPathHash;
+                animation_hash = 0;
+                return true;
+            }
+            var current_animator_state_info = animator.GetCurrentAnimatorStateInfo(0);
+            if (current_animator_state_info.fullPathHash == animation_hash) return false;
+            if (animation_hash != 0)
+            {
+                state_hash = current_animator_state_info.fullPathHash;
+                normalized_time = current_animator_state_info.normalizedTime;
+            }
+            transition_hash = 0;
+            animation_hash = current_animator_state_info.fullPathHash;
+            return true;
+        }
+
         #endregion
 
         #region SetData
-
         public void SetAnimState(MyAniationMessage msg)
         {
             if (identity.IsLocalSpawned) return;
-            if (msg.stateHash == 0) return;
-            animator.Play(msg.stateHash, 0, msg.normalizedTime);
+            if (msg.state_hash == 0) return;
+            animator.Play(msg.state_hash, 0, msg.normalized_time);
         }
 
         public void SetParamter(MyAniationParamterMessage[] x)
@@ -178,30 +166,5 @@ namespace SteamMultiplayer
             }
         }
         #endregion
-
-        private bool CheckAnimStateChanged(out int state_hash, out float normalized_time)
-        {
-            state_hash = 0;
-            normalized_time = 0f;
-            if (animator.IsInTransition(0))
-            {
-                var animator_transition_info = animator.GetAnimatorTransitionInfo(0);
-                if (animator_transition_info.fullPathHash == transition_hash) return false;
-                transition_hash = animator_transition_info.fullPathHash;
-                animation_hash = 0;
-                return true;
-            }
-            var current_animator_state_info = animator.GetCurrentAnimatorStateInfo(0);
-            if (current_animator_state_info.fullPathHash == animation_hash) return false;
-            if (animation_hash != 0)
-            {
-                state_hash = current_animator_state_info.fullPathHash;
-                normalized_time = current_animator_state_info.normalizedTime;
-            }
-            transition_hash = 0;
-            animation_hash = current_animator_state_info.fullPathHash;
-            return true;
-        }
-
     }
 }

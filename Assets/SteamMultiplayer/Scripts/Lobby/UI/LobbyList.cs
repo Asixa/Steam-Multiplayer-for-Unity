@@ -1,26 +1,27 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using Steamworks;
+﻿using Steamworks;
 using UnityEngine;
-using UnityEngine.UI;
 public class LobbyList : MonoBehaviour {
 
     CallResult<LobbyMatchList_t> m_LobbyMatchListCallResult;
 
-    void Start ()
+    private SingleLobbyButton[] m_items;
+    private Lobby[] m_Lobbies;
+    public SingleLobbyButton item_prefab;
+    public GameObject container;
+
+    private void Start ()
     {
         SteamAPI.Init();
-		prepare();
+		Prepare();
         Refresh();
 	}
 
-    void prepare()
+    public void Prepare()
     {
         m_LobbyMatchListCallResult = CallResult<LobbyMatchList_t>.Create(OnLobbyMatchList);
     }
 
-
-	void Update () {
+    private void Update () {
 		SteamAPI.RunCallbacks();
 	}
 
@@ -34,104 +35,76 @@ public class LobbyList : MonoBehaviour {
         NetworkLobbyManager.instance.CreateLobby();
     }
 
-
-    private SingleLobbyButton[] m_items;
-    private Lobby[] m_Lobbies;
-    public SingleLobbyButton itemPrefab;
-    public GameObject Container;
-
     public void DesplayList()
     {
-
-        int nLobbies = m_Lobbies.Length;
+        var nLobbies = m_Lobbies.Length;
         if (m_items!=null&&m_items.Length> 0)
         foreach (var t in m_items)
         {
             Destroy(t.gameObject);
         }
 
-        RectTransform rectTransform = Container.GetComponent<RectTransform>();
-        rectTransform.sizeDelta=new Vector2(rectTransform.sizeDelta.x, nLobbies * itemPrefab.GetComponent<RectTransform>().sizeDelta.y);
+        var rect_transform = container.GetComponent<RectTransform>();
+        rect_transform.sizeDelta=new Vector2(rect_transform.sizeDelta.x, nLobbies * item_prefab.GetComponent<RectTransform>().sizeDelta.y);
 
         m_items = new SingleLobbyButton[nLobbies];
         for (var i = 0; i < nLobbies; ++i)
         {
-            m_items[i] = Instantiate(itemPrefab);
+            m_items[i] = Instantiate(item_prefab);
             m_items[i].gameObject.SetActive(true);
             m_items[i].name = gameObject.name + " item at (" + i + ")";
-            m_items[i].transform.parent = Container.transform;
-
-            {
-                m_items[i].ID.text=i.ToString();
-                m_items[i].Name.text = SteamFriends.GetFriendPersonaName(m_Lobbies[i].m_Owner);
-                m_items[i].Name.text = m_items[i].Name.text == "" ? "NULL" : m_items[i].Name.text + "'s Lobby";
-                m_items[i].MumberCount.text = m_Lobbies[i].m_Members.Length + "/" + m_Lobbies[i].m_MemberLimit;
-                m_items[i].server_id = m_Lobbies[i].m_SteamID;
-               
-            }
+            m_items[i].transform.parent = container.transform;
+            m_items[i].ID.text=i.ToString();
+            m_items[i].Name.text = SteamMatchmaking.GetLobbyData(m_Lobbies[i].m_SteamID, "name");
+            if (m_items[i].Name.text == "") m_items[i].Name.text = "NULL";
+            m_items[i].MumberCount.text = m_Lobbies[i].m_Members.Length + "/" + m_Lobbies[i].m_MemberLimit;
+            m_items[i].server_id = m_Lobbies[i].m_SteamID;
             m_items[i].button.onClick.AddListener(delegate {
             });
         }
     }
 
-
-    void OnLobbyMatchList(LobbyMatchList_t pCallback, bool bIOFailure)
+    private void OnLobbyMatchList(LobbyMatchList_t pCallback, bool bIOFailure)
     {
         if (bIOFailure)
         {
-            ESteamAPICallFailure reason = SteamUtils.GetAPICallFailureReason(m_LobbyMatchListCallResult.Handle);
+            var reason = SteamUtils.GetAPICallFailureReason(m_LobbyMatchListCallResult.Handle);
             Debug.LogError("OnLobbyMatchList encountered an IOFailure due to: " + reason);
-            return; // TODO: Recovery
+            return;
         }
-
-        //Debug.Log("[刷新到大厅]:" + pCallback.m_nLobbiesMatching);
-
         if (pCallback.m_nLobbiesMatching == 0)
         {
-            //*************没有找到服务器
             return;
         }
 
         m_Lobbies = new Lobby[pCallback.m_nLobbiesMatching];
-        for (int i = 0; i < pCallback.m_nLobbiesMatching; ++i)
-        {
+        for (var i = 0; i < pCallback.m_nLobbiesMatching; ++i)
+        { 
             UpdateLobbyInfo(SteamMatchmaking.GetLobbyByIndex(i), ref m_Lobbies[i]);
-
-            /*uint IP;
-			ushort Port;
-			CSteamID GameServerSteamID;
-			bool lobbyGameServerRet = SteamMatchmaking.GetLobbyGameServer(m_Lobbies[i].m_SteamID, out IP, out Port, out GameServerSteamID);
-			print("IP: " + IP);
-			print("Port: " + Port);
-			print("GSID: " + GameServerSteamID);*/
         }
-
         DesplayList();
-        //ChangeState(EChatClientState.DisplayResults);
     }
-    void UpdateLobbyInfo(CSteamID steamIDLobby, ref Lobby outLobby)
+
+    private static void UpdateLobbyInfo(CSteamID steamIDLobby, ref Lobby outLobby)
     {
         outLobby.m_SteamID = steamIDLobby;
         outLobby.m_Owner = SteamMatchmaking.GetLobbyOwner(steamIDLobby);
         outLobby.m_Members = new LobbyMembers[SteamMatchmaking.GetNumLobbyMembers(steamIDLobby)];
         outLobby.m_MemberLimit = SteamMatchmaking.GetLobbyMemberLimit(steamIDLobby);
 
-        int nDataCount = SteamMatchmaking.GetLobbyDataCount(steamIDLobby);
+        var nDataCount = SteamMatchmaking.GetLobbyDataCount(steamIDLobby);
         outLobby.m_Data = new LobbyMetaData[nDataCount];
-        for (int i = 0; i < nDataCount; ++i)
+        for (var i = 0; i < nDataCount; ++i)
         {
-            bool lobbyDataRet = SteamMatchmaking.GetLobbyDataByIndex(steamIDLobby, i, out outLobby.m_Data[i].m_Key, Constants.k_nMaxLobbyKeyLength, out outLobby.m_Data[i].m_Value, Constants.k_cubChatMetadataMax);
-            if (!lobbyDataRet)
-            {
-                Debug.LogError("SteamMatchmaking.GetLobbyDataByIndex returned false.");
-                continue;
-            }
-
+            var lobby_data_ret = SteamMatchmaking.GetLobbyDataByIndex(steamIDLobby, i, out outLobby.m_Data[i].m_Key, Constants.k_nMaxLobbyKeyLength, out outLobby.m_Data[i].m_Value, Constants.k_cubChatMetadataMax);
+            if (lobby_data_ret) continue;
+            Debug.LogError("SteamMatchmaking.GetLobbyDataByIndex returned false.");
+            continue;
         }
     }
 
     #region Structs
-    struct Lobby
+    private struct Lobby
     {
         public CSteamID m_SteamID;
         public CSteamID m_Owner;
@@ -140,13 +113,13 @@ public class LobbyList : MonoBehaviour {
         public LobbyMetaData[] m_Data;
     }
 
-    struct LobbyMetaData
+    private struct LobbyMetaData
     {
         public string m_Key;
         public string m_Value;
     }
 
-    struct LobbyMembers
+    private struct LobbyMembers
     {
         public CSteamID m_SteamID;
         public LobbyMetaData[] m_Data;

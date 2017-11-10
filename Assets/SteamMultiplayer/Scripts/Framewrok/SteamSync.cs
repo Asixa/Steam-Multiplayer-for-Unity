@@ -17,7 +17,7 @@ namespace SteamMultiplayer
         public class SavedEntry
         {
             public Component target;
-            public string propertyName;
+            public string property_name;
         }
         public List<SavedEntry> entries = new List<SavedEntry>();
 
@@ -35,7 +35,7 @@ namespace SteamMultiplayer
         public List<ExtendedEntry> mList = new List<ExtendedEntry>();
         object[] mCached = null;
 
-        void Awake()
+        private void Awake()
         {
             GetComponent<Identity>().sync = this;
 #if UNITY_EDITOR
@@ -49,13 +49,12 @@ namespace SteamMultiplayer
             else
 #endif
             {
-                // Find all properties, converting the saved list into the usable list of reflected properties
                 for (int i = 0, imax = entries.Count; i < imax; ++i)
                 {
                     var ent = entries[i];
-                    if (ent.target == null || string.IsNullOrEmpty(ent.propertyName)) continue;
+                    if (ent.target == null || string.IsNullOrEmpty(ent.property_name)) continue;
                     var field = ent.target.GetType()
-                        .GetField(ent.propertyName, BindingFlags.Instance | BindingFlags.Public);
+                        .GetField(ent.property_name, BindingFlags.Instance | BindingFlags.Public);
                     if (field != null)
                     {
                         var ext = new ExtendedEntry
@@ -65,12 +64,11 @@ namespace SteamMultiplayer
                             last_value = field.GetValue(ent.target)
                         };
                         mList.Add(ext);
-                        continue;
                     }
                     else
                     {
                         var pro = ent.target.GetType()
-                            .GetProperty(ent.propertyName, BindingFlags.Instance | BindingFlags.Public);
+                            .GetProperty(ent.property_name, BindingFlags.Instance | BindingFlags.Public);
 
                         if (pro != null)
                         {
@@ -81,11 +79,10 @@ namespace SteamMultiplayer
                                 last_value = pro.GetValue(ent.target, null)
                             };
                             mList.Add(ext);
-                            continue;
                         }
                         else
                         {
-                            Debug.LogError("Unable to find property: '" + ent.propertyName + "' on " +
+                            Debug.LogError("Unable to find property: '" + ent.property_name + "' on " +
                                            ent.target.GetType());
                         }
                     }
@@ -95,7 +92,7 @@ namespace SteamMultiplayer
 
         public void Update()
         {
-        if(!Application.isPlaying)return;
+            if(!Application.isPlaying)return;
             CurrentTime -= Time.deltaTime;
             if (mList.Count <= 0) return;
             if (updatesPerSecond <= 0) return;
@@ -144,11 +141,11 @@ namespace SteamMultiplayer
 
             if (syn_mode==SyncMode.Quickly)
             {
-                SMC.SendPacketsQuicklly(new P2PPackage(mCached,P2PPackageType.Sync,identity),false);
+                NetworkControl.SendPacketsQuicklly(new P2PPackage(mCached,P2PPackageType.Sync,identity),false);
             }
             else
             {
-                SMC.SendPacketsSafely(new P2PPackage(mCached, P2PPackageType.Sync, identity), false);
+                NetworkControl.SendPacketsSafely(new P2PPackage(mCached, P2PPackageType.Sync, identity), false);
             }
         }
 
@@ -157,7 +154,7 @@ namespace SteamMultiplayer
             if (!enabled) return;
             for (var i = 0; i < mList.Count; ++i)
             {
-                ExtendedEntry ext = mList[i];
+                var ext = mList[i];
                 ext.last_value = val[i];
                 if (ext.field != null)
                 {

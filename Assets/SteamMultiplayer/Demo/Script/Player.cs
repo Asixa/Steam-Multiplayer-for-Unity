@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using SteamMultiplayer;
 using UnityEngine;
 using UnityStandardAssets._2D;
@@ -7,18 +6,17 @@ using UnityStandardAssets._2D;
 public class Player : SteamNetworkBehaviour
 {
     public Platformer2DUserControl control;
-    public PlatformerCharacter2D chara;
+    public PlatformerCharacter2D character;
     public SpriteRenderer so_renderer;
     public List<Color32> colors;
-
     private int current_color;
-	// Use this for initialization
+
     private void Start () {
 
 	    if (!identity.IsLocalSpawned)
 	    {
 	        control.enabled = false;
-	        chara.enabled = false;
+	        character.enabled = false;
 	    }
 	}
 

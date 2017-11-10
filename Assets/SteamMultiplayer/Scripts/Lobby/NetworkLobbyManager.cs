@@ -1,25 +1,4 @@
-﻿//                   _ooOoo_
-//                  o8888888o
-//                  88" . "88
-//                  (| -_- |)
-//                  O\  =  /O
-//               ____/`---'\____
-//             .'  \\|     |//  `.
-//            /  \\|||  :  |||//  \
-//           /  _||||| -:- |||||-  \
-//           |   | \\\  -  /// |   |
-//           | \_|  ''\---/''  |   |
-//           \  .-\__  `-`  ___/-. /
-//         ___`. .'  /--.--\  `. . __
-//      ."" '<  `.___\_<|>_/___.'  >'"".
-//     | | :  `- \`.;`\ _ /`;.`/ - ` : | |
-//     \  \ `-.   \_ __\ /__ _/   .-` /  /
-//======`-.____`-.___\_____/___.-`____.-'======
-//                   `=---='
-//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-//           佛祖保佑       永无BUG
-//  本类已经经过开光处理，绝无可能再产生bug
-//=============================================
+﻿//=============================================
 //本脚本用于大厅的创建和网络连接的数据获取
 //创建者: Asixa 2017-9-x
 //最新修改 Asixa 2017-10-29
@@ -30,10 +9,12 @@ using UnityEngine;
 using Steamworks;
 using System.Text;
 using SteamMultiplayer;
+using UnityEditor;
 using UnityEngine.Events;
+using UnityEngine.SceneManagement;
 
 [AddComponentMenu("SteamMultiplayer/LobbyManager")]
-[RequireComponent(typeof(SMC))]
+[RequireComponent(typeof(NetworkControl))]
 public class NetworkLobbyManager : MonoBehaviour {
 
     public static NetworkLobbyManager instance;
@@ -50,6 +31,14 @@ public class NetworkLobbyManager : MonoBehaviour {
     {
         Port = 233,TimeoutSec = 300
     };
+    [Serializable]
+    public struct SceneInfo
+    {
+        public SceneAsset OnlineScene;
+        public SceneAsset LobbyScene;
+    }
+
+    public SceneInfo scenes;
 
     //List than contains all the prefab that can spawn
     public List<Identity> SpawnablePrefab = new List<Identity>();
@@ -64,11 +53,14 @@ public class NetworkLobbyManager : MonoBehaviour {
 
     protected Callback<LobbyChatUpdate_t> m_LobbyChatUpdate;// Chat Massage
     protected Callback<LobbyChatMsg_t> m_LobbyChatMsg;      // Chat Message
+    protected Callback<GameLobbyJoinRequested_t> m_LobbyInvite;
 
     //Chating
     [HideInInspector]
     public string chatstring = null;
 
+    public CSteamID host { get { return NetworkControl.PlayerList[0]; } }
+    public bool isHost { get { return NetworkControl.SelfID == host; } }
     #endregion
 
     #region Unity Reserved Functions
@@ -88,6 +80,7 @@ public class NetworkLobbyManager : MonoBehaviour {
         SteamAPI.Init();
         Spawnable_Object_Init();
         ChatInit();
+        m_LobbyInvite=Callback<GameLobbyJoinRequested_t>.Create(OnInvited);
     }
 
     void Update()
@@ -113,16 +106,16 @@ public class NetworkLobbyManager : MonoBehaviour {
     public void LeaveLobby()
     {
         SendChatMessage(SteamFriends.GetPersonaName() + " Lefted the Lobby", false);
-        SMC.SendPacketsSafely(new P2PPackage(null,P2PPackageType.LeftLobby),false);
+        NetworkControl.SendPacketsSafely(new P2PPackage(null,P2PPackageType.LeftLobby),false);
         SteamMatchmaking.LeaveLobby(lobby);
         lobby = new CSteamID();
 
-        foreach (var t in SMC.instance.OnlineObjects)
+        foreach (var t in NetworkControl.instance.OnlineObjects)
         {
             if (t == null) continue;
             Destroy(t.gameObject);
         }
-        SMC.instance.OnlineObjects.Clear();
+        NetworkControl.instance.OnlineObjects.Clear();
         if (events.lobby_leaved != null) events.lobby_leaved.Invoke();
     }
 
@@ -132,13 +125,31 @@ public class NetworkLobbyManager : MonoBehaviour {
         var lobby_type = ELobbyType.k_ELobbyTypePublic;
         CLobbyCreator.Set(SteamMatchmaking.CreateLobby(lobby_type, mumber_count), OnLobbyCreated);
     }
+
+    private string LobbyName;
+    public void CreateLobby(int mumbercount, ELobbyType type, string name)
+    {
+        LobbyName = name;
+        CLobbyCreator.Set(SteamMatchmaking.CreateLobby(type, mumbercount), OnLobbyCreated);
+    }
+
+    public bool InviteFriend(CSteamID id)
+    {
+      return SteamMatchmaking.InviteUserToLobby(lobby, id);
+    }
+
+    public void Invite()
+    {
+        SteamFriends.ActivateGameOverlayInviteDialog(lobby);
+    }
     #endregion
 
     #region Chat 
     public void SendChatMessage(string t, bool Chat = true)
     {
-        string content = Chat ? DateTime.Now.ToString("HH:mm:ss") + " " + SteamFriends.GetPersonaName() + ": " + t : t;
-        SteamMatchmaking.SendLobbyChatMsg(lobby, Encoding.Default.GetBytes(content), content.Length + 1);
+        var content = Chat ? DateTime.Now.ToString("HH:mm:ss") + " " + SteamFriends.GetPersonaName() + ": " + t : t;
+        var _byte = Encoding.Default.GetBytes(content);
+        SteamMatchmaking.SendLobbyChatMsg(lobby, Encoding.Default.GetBytes(content), _byte.Length + 1);
     }
     #endregion
 
@@ -171,7 +182,7 @@ public class NetworkLobbyManager : MonoBehaviour {
         EChatEntryType ChatEntryType;
         var ret = SteamMatchmaking.GetLobbyChatEntry((CSteamID)pCallback.m_ulSteamIDLobby, (int)pCallback.m_iChatID, out SteamIDUser, Data, Data.Length, out ChatEntryType);
 
-        chatstring = Encoding.UTF8.GetString(Data);
+        chatstring = Encoding.Default.GetString(Data);
         if (lobby_chat_msg_recevied != null) lobby_chat_msg_recevied.Invoke(chatstring);
     }
 
@@ -179,16 +190,23 @@ public class NetworkLobbyManager : MonoBehaviour {
     {
         pCallbacks.m_ulSteamIDLobby.ToString();
         lobby = new CSteamID(pCallbacks.m_ulSteamIDLobby);
+        print("設置大廳名稱為"+LobbyName+" "+SteamMatchmaking.SetLobbyData(lobby, "name", LobbyName));
         if (events.lobby_created != null) events.lobby_created.Invoke();
         JoinLobby(lobby);
     }
 
     private void OnLobbyJoined(LobbyEnter_t pCallbacks, bool bIOFailure)
     {
-        SMC.CreateConnections(lobby);
+        NetworkControl.CreateConnections(lobby);
         if (events.lobby_just_joined != null) events.lobby_just_joined.Invoke();
         SendChatMessage(SteamFriends.GetPersonaName() + " Joined the Lobby", false);
-        SMC.instance.CheckJoinedLobby();
+        NetworkControl.instance.CheckJoinedLobby();
+    }
+
+    private void OnInvited(GameLobbyJoinRequested_t pCallbacks)
+    {
+        if (Invitation.instance == null) return;
+        Invitation.instance.ShowInvite(pCallbacks.m_steamIDFriend,pCallbacks.m_steamIDLobby);
     }
     #endregion
 
@@ -205,5 +223,10 @@ public class NetworkLobbyManager : MonoBehaviour {
     public delegate void LobbyChatMsgRecevied(string t);
     public LobbyChatMsgRecevied lobby_chat_msg_recevied;
     #endregion
+
+    public void Play()
+    {
+        SceneManager.LoadScene(scenes.OnlineScene.name);
+    }
 
 }

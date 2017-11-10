@@ -19,12 +19,13 @@ namespace SteamMultiplayer
         }
 
         public bool IsLocalObject{get { return identity.IsLocalSpawned; }}
+        public bool IsHost { get { return NetworkLobbyManager.instance.isHost; } }
         [HideInInspector]
         public Identity identity;
 
         public void rpcCall(int funcIndex, params object[] values)
         {
-            SMC.SendPackets(new P2PPackage(new SMC.RPCInfo(funcIndex, values), P2PPackageType.RPC,identity), EP2PSend.k_EP2PSendReliable);
+            NetworkControl.SendPackets(new P2PPackage(new NetworkControl.RPCInfo(funcIndex, values), P2PPackageType.RPC,identity), EP2PSend.k_EP2PSendReliable);
         }
     }
 

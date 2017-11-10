@@ -20,7 +20,7 @@ namespace SteamMultiplayer
                 if (CurrentTime <= 0)
                 {
                     CurrentTime = 1 / 9;
-                    SMC.SendPackets(
+                    NetworkControl.SendPackets(
                         new P2PPackage(new Lib.M_Vector3(transform.position), P2PPackageType.位移同步,
                             identity),
                         EP2PSend.k_EP2PSendUnreliable, false);

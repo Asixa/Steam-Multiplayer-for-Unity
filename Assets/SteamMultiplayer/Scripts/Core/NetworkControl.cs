@@ -13,15 +13,13 @@ namespace SteamMultiplayer
 {
 
     [Serializable]
-    public class SMC : MonoBehaviour
+    public class NetworkControl : MonoBehaviour
     {
         #region Variables
-
-        [Locked]
         public int PlayerCount;
 
-        // One instance of SMC
-        public static SMC instance;
+        // One instance of NetworkControl
+        public static NetworkControl instance;
 
         // Local player's SteamID
         public static CSteamID SelfID;
@@ -40,7 +38,7 @@ namespace SteamMultiplayer
             Callback<P2PSessionRequest_t>.Create(OnP2PSessionRequest);
 
         // ArrayList that contains all players' CSteamID
-        static List<CSteamID> PlayerList = new List<CSteamID>();
+        public static List<CSteamID> PlayerList = new List<CSteamID>();
 
         //Time to send junkdata
         private float JunkPackagetime = 0.1f;
@@ -53,21 +51,24 @@ namespace SteamMultiplayer
         }
 
         public SMCEvents events;
+
+        private static bool checking_joined;
+        public static bool[] player_need_to_connect;
         #endregion
 
         #region Unity reserved functions
 
-        public void Awake()
+        private void Awake()
         {
             instance = this;
         }
 
-        public void Start()
+        private void Start()
         {
             SelfID = SteamUser.GetSteamID();
         }
 
-        void Update()
+        private void Update()
         {
 
             if (PlayerCount != PlayerList.Count)
@@ -89,7 +90,7 @@ namespace SteamMultiplayer
                 //Debug.Log("从 " + SteamFriends.GetFriendPersonaName(remoteId) + " 收到包" + package.type + " ID " +
                 //          package.Object_identity);
                 if(NetworkLobbyManager.instance.lobby.m_SteamID!=0)
-                DecodeP2PCode(package, remoteId);
+                Analyze(package, remoteId);
             }
 
             #endregion
@@ -102,22 +103,26 @@ namespace SteamMultiplayer
                 SendPackets(new P2PPackage(null,P2PPackageType.JunkData), EP2PSend.k_EP2PSendUnreliable, false);
             }
 
-            if (CheckingJoined)
+            if (checking_joined)
             {
                 var ready = true;
-                foreach (var t in PlayerNeedToConnect)
+                foreach (var t in player_need_to_connect)
                 {
                     if (!t) ready = false;
                 }
                 if (ready)
                 {
                     events.JoinedLobby.Invoke();
-                    CheckingJoined = false;
+                    checking_joined = false;
                 }
             }
 
         }
 
+        private void OnApplicationQuit()
+        {
+            SteamAPI.Shutdown();
+        }
         #endregion
 
         public void UpdatePlayerList()
@@ -143,8 +148,8 @@ namespace SteamMultiplayer
             }
         }
 
-        // Analyze and run the P2Ppackage
-        private static void DecodeP2PCode(P2PPackage package, CSteamID steamid)
+        // Analyze the P2Ppackage
+        public virtual void Analyze(P2PPackage package, CSteamID steamid)
         {
             if (package.type != P2PPackageType.Instantiate)
             {
@@ -193,12 +198,12 @@ namespace SteamMultiplayer
                         //PlayerNeedToConnect=new bool[PlayerList.Count];
                         //PlayerNeedToConnect[PlayerList.IndexOf(SelfID)] = true;
                     }
-                    if (CheckingJoined)
+                    if (checking_joined)
                     {
                         var index = PlayerList.IndexOf(steamid);
-                        if (!PlayerNeedToConnect[index])
+                        if (!player_need_to_connect[index])
                         {
-                            PlayerNeedToConnect[index] = true;
+                            player_need_to_connect[index] = true;
                         }
                     }
                     break;
@@ -500,18 +505,11 @@ namespace SteamMultiplayer
 
         #endregion
 
-        void OnApplicationQuit()
-        {
-            SteamAPI.Shutdown();
-        }
-
-        private static bool CheckingJoined;
-        public static bool[] PlayerNeedToConnect;
         public void CheckJoinedLobby()
         {
-            PlayerNeedToConnect=new bool[PlayerList.Count];
-            PlayerNeedToConnect[PlayerList.IndexOf(SelfID)] = true;
-            CheckingJoined = true;
+            player_need_to_connect=new bool[PlayerList.Count];
+            player_need_to_connect[PlayerList.IndexOf(SelfID)] = true;
+            checking_joined = true;
         }
     }
 }

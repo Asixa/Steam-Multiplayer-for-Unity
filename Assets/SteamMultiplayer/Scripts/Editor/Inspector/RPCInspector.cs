@@ -1,5 +1,3 @@
-
-using System;
 using UnityEngine;
 using UnityEditor;
 using System.Reflection;
@@ -13,13 +11,13 @@ public class RPCInspector : Editor
 	public override void OnInspectorGUI ()
 	{
 
-        SteamRPC rpc = target as SteamRPC;
+        var rpc = target as SteamRPC;
 
-        List<Component> components = GetComponents(rpc);
-        string[] names = GetComponentNames(components);
+        var components = GetComponents(rpc);
+        var names = GetComponentNames(components);
 
         EditorGUILayout.BeginVertical("box");
-        for (int i = 0; i < rpc.entries.Count;)
+        for (var i = 0; i < rpc.entries.Count;)
         {
             GUILayout.BeginHorizontal();
             {
@@ -57,9 +55,9 @@ public class RPCInspector : Editor
 
     private static List<Component> GetComponents(SteamRPC sync)
     {
-        Component[] comps = sync.GetComponents<Component>();
+        var comps = sync.GetComponents<Component>();
 
-        List<Component> list = new List<Component>();
+        var list = new List<Component>();
 
         for (int i = 0, imax = comps.Length; i < imax; ++i)
         {
@@ -89,8 +87,8 @@ public class RPCInspector : Editor
             EditorUtility.SetDirty(_rpc);
         }
 
-        int oldIndex = 0;
-        string tname = (ent.target != null) ? ent.target.GetType().ToString() : "<None>";
+        var oldIndex = 0;
+        var tname = (ent.target != null) ? ent.target.GetType().ToString() : "<None>";
 
         for (var i = 1; i < names.Length; ++i)
         {
@@ -104,10 +102,10 @@ public class RPCInspector : Editor
 
         // EditorGUILayout.HelpBox(index.ToString(), MessageType.None);
         EditorGUILayout.LabelField(index.ToString(), GUILayout.Width(20f), GUILayout.Height(14f));
-        bool delete = GUILayout.Button("X", GUILayout.Width(24f), GUILayout.Height(14f));
+        var delete = GUILayout.Button("X", GUILayout.Width(24f), GUILayout.Height(14f));
         
         GUI.backgroundColor = Color.white;
-        int newIndex = EditorGUILayout.Popup(oldIndex, names);
+        var newIndex = EditorGUILayout.Popup(oldIndex, names);
 
         if (delete)
         {
@@ -121,7 +119,6 @@ public class RPCInspector : Editor
             ent.target = (newIndex == 0) ? null : components[newIndex - 1];
             EditorUtility.SetDirty(_rpc);
         }
-
         return true;
     }
 
@@ -129,36 +126,28 @@ public class RPCInspector : Editor
     {
         if (nowEntry.target == null) return;
 
-        MethodInfo[] Methods = nowEntry.target.GetType().GetMethods(
+        var Methods = nowEntry.target.GetType().GetMethods(
             BindingFlags.Instance | BindingFlags.Public);
         Component igorne = new MonoBehaviour();
         var igorne_methond = igorne.GetType().GetMethods(
             BindingFlags.Public | BindingFlags.Instance);
 
-        int oldIndex = 0;
-        List<string> names = new List<string>();
+        var oldIndex = 0;
+        var names = new List<string>();
         names.Add("<None>");
-        var AvalibleMthods = new List<MethodInfo>();
-        foreach (var t in Methods)
-        {
-            var ignore = igorne_methond.Any(t1 => t1.Name == t.Name);
-            if (ignore) continue;
-            AvalibleMthods.Add(t);
-        }
+        var avalible_mthods = (from t in Methods let ignore = igorne_methond.Any(t1 => t1.Name == t.Name) where !ignore select t).ToList();
 
-        foreach (var t in AvalibleMthods)
+        foreach (var t in avalible_mthods)
         {
-            if (t.Name == nowEntry.MethodName)oldIndex = names.Count;
+            if (t.Name == nowEntry.method_name)oldIndex = names.Count;
             names.Add(t.Name);
         }
 
         var new_index = EditorGUILayout.Popup(oldIndex, names.ToArray());
 
-        if (new_index != oldIndex)
-        {
-            nowEntry.method = (new_index == 0) ? null : AvalibleMthods[new_index - 1];
-            nowEntry.MethodName =nowEntry.method==null?"<None>": nowEntry.method.Name;
-            EditorUtility.SetDirty(_rpc);
-        }
+        if (new_index == oldIndex) return;
+        nowEntry.method = (new_index == 0) ? null : avalible_mthods[new_index - 1];
+        nowEntry.method_name =nowEntry.method==null?"<None>": nowEntry.method.Name;
+        EditorUtility.SetDirty(_rpc);
     }
 }

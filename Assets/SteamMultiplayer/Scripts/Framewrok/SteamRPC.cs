@@ -11,18 +11,12 @@ namespace SteamMultiplayer
         public class Entry
         {
             public Component target;
-            public string MethodName;
+            public string method_name;
             public MethodInfo method;
         }
         public List<Entry> entries = new List<Entry>();
-
-        //public class ExtendedEntry : Entry
-        //{
-        //    public MethodInfo method;
-        //}
-
         public List<Entry> mList = new List<Entry>();
-        object[] mCached = null;
+        public object[] m_cached = null;
 
         void Awake()
         {
@@ -32,43 +26,34 @@ namespace SteamMultiplayer
             if (!Application.isPlaying)
             {
                 var tns = GetComponents<SteamSync>();
-                if (tns.Length > 1 && tns[0] != this)
-                {
-                    Debug.LogError("Can't have more than one " + GetType() + " per game object", gameObject);
-                    DestroyImmediate(this);
-                }
+                if (tns.Length <= 1 || tns[0] == this) return;
+                Debug.LogError("Can't have more than one " + GetType() + " per game object", gameObject);
+                DestroyImmediate(this);
             }
             else
 #endif
             {
-               Set();
+               Init();
             }
-           // mList[0].method.Invoke(mList[0].target,null);
         }
 
-        public void Set()
+        public void Init()
         {
             for (int i = 0, imax = entries.Count; i < imax; ++i)
             {
                 var ent = entries[i];
-                if (ent.target != null)
+                if (ent.target == null) continue;
+                var method = ent.target.GetType()
+                    .GetMethod(ent.method_name, BindingFlags.Instance | BindingFlags.Public);
+                if (method == null) continue;
+                var ext = new Entry
                 {
-                    var method = ent.target.GetType()
-                        .GetMethod(ent.MethodName, BindingFlags.Instance | BindingFlags.Public);
-
-                    if (method != null)
-                    {
-                        var ext = new Entry
-                        {
-                            target = ent.target,
-                            method = method,
-                            MethodName = ent.MethodName,
-                        };
-                        ent.method = method;
-                        mList.Add(ext);
-                        continue;
-                    }
-                }
+                    target = ent.target,
+                    method = method,
+                    method_name = ent.method_name,
+                };
+                ent.method = method;
+                mList.Add(ext);
             }
         }
 

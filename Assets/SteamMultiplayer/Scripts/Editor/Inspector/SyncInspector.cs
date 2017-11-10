@@ -1,4 +1,3 @@
-// Fixed Me: Qua&Vector ==>M
 using System;
 using UnityEngine;
 using UnityEditor;
@@ -109,7 +108,7 @@ public class SyncInspector : Editor
 		if (new_index != old_index)
 		{
 			ent.target = (new_index == 0) ? null : components[new_index - 1];
-			ent.propertyName = "";
+			ent.property_name = "";
 			EditorUtility.SetDirty(sync);
 		}
 
@@ -132,13 +131,13 @@ public class SyncInspector : Editor
 	    foreach (var t in fields)
 		{
 		    if (!CanBeSerialized(t.FieldType)) continue;
-		    if (t.Name == saved.propertyName) old_index = names.Count;
+		    if (t.Name == saved.property_name) old_index = names.Count;
 		    names.Add(t.Name);
 		} 
 		foreach (var pi in properties)
 		{
 		    if (!CanBeSerialized(pi.PropertyType) || !pi.CanWrite || !pi.CanRead) continue;
-		    if (pi.Name == saved.propertyName) old_index = names.Count;
+		    if (pi.Name == saved.property_name) old_index = names.Count;
 		    names.Add(pi.Name);
 		}
 
@@ -146,7 +145,7 @@ public class SyncInspector : Editor
 
 		if (newIndex != old_index)
 		{
-			saved.propertyName = (newIndex == 0) ? "" : names[newIndex];
+			saved.property_name = (newIndex == 0) ? "" : names[newIndex];
 			EditorUtility.SetDirty(sync);
 		}
 	}
