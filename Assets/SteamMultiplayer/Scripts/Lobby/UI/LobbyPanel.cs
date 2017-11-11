@@ -108,4 +108,14 @@ public class LobbyPanel : MonoBehaviour
         new_chat_text.gameObject.SetActive(true);
         history.Add(new_chat_text);
     }
+
+    public void OnPlayGame()
+    {
+        NetworkLobbyManager.instance.PlayButtonDowm();
+    }
+
+    public void OnInviteFriends()
+    {
+        NetworkLobbyManager.instance.Invite();
+    }
 }

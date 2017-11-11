@@ -60,6 +60,7 @@ namespace SteamMultiplayer
 
         private void Awake()
         {
+            if (instance != null) Destroy(gameObject);
             instance = this;
         }
 
@@ -99,7 +100,7 @@ namespace SteamMultiplayer
             JunkPackagetime -= Time.deltaTime;
             if (JunkPackagetime <= 0)
             {
-                JunkPackagetime = 1 / 8;
+                JunkPackagetime = 1 / 8f;
                 if(NetworkLobbyManager.instance.lobby.m_SteamID!=0)
                 SendPackets(new P2PPackage(null,P2PPackageType.JunkData), EP2PSend.k_EP2PSendUnreliable, false);
             }

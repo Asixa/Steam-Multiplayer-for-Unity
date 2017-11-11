@@ -33,8 +33,9 @@ public class NetworkLobbyManager : MonoBehaviour {
     [Serializable]
     public struct SceneInfo
     {
-    //    public SceneAsset OnlineScene;
-    //    public SceneAsset LobbyScene;
+        public string OnlineScene;
+        public string LobbyScene;
+        [HideInInspector] public string CurrentScene;
     }
 
     public SceneInfo scenes;
@@ -71,6 +72,7 @@ public class NetworkLobbyManager : MonoBehaviour {
         {
             throw new Exception("There are more than one manager in the scene");
         }
+        if (instance != null) Destroy(gameObject);
         instance = this;
     }
 
@@ -85,6 +87,11 @@ public class NetworkLobbyManager : MonoBehaviour {
     void Update()
     {
         SteamAPI.RunCallbacks();
+        if(lobby.m_SteamID!=0)
+        if (SteamMatchmaking.GetLobbyData(lobby, "ready") == "1")
+        {
+            Play();
+        }
     }
 
     void OnApplicationQuit()
@@ -116,6 +123,12 @@ public class NetworkLobbyManager : MonoBehaviour {
         }
         NetworkControl.instance.OnlineObjects.Clear();
         if (events.lobby_leaved != null) events.lobby_leaved.Invoke();
+        Destroy(gameObject);
+        if (scenes.CurrentScene != scenes.LobbyScene)
+        {
+            SceneManager.LoadScene(scenes.LobbyScene);
+            scenes.CurrentScene = scenes.LobbyScene;
+        }
     }
 
     public void CreateLobby()
@@ -225,9 +238,19 @@ public class NetworkLobbyManager : MonoBehaviour {
     public LobbyChatMsgRecevied lobby_chat_msg_recevied;
     #endregion
 
-    public void Play()
+    public void PlayButtonDowm()
     {
-      //  SceneManager.LoadScene(scenes.OnlineScene.name);
+        SteamMatchmaking.SetLobbyData(lobby, "ready", "1");
+        //  SceneManager.LoadScene(scenes.OnlineScene.name);
+    }
+
+    private void Play()
+    {
+        if (scenes.CurrentScene != scenes.OnlineScene)
+        {
+            SceneManager.LoadScene(scenes.OnlineScene);
+            scenes.CurrentScene = scenes.OnlineScene;
+        }
     }
 
 }

@@ -15,14 +15,14 @@ namespace SteamMultiplayer
     {
         public void Awake()
         {
-            identity = GetComponent<Identity>();
+            _identity = GetComponent<Identity>();
         }
 
         public bool IsLocalObject{get { return identity.IsLocalSpawned; }}
         public bool IsHost { get { return NetworkLobbyManager.instance.isHost; } }
         [HideInInspector]
-        public Identity identity;
-
+        public Identity identity { get { return _identity ?? (_identity = GetComponent<Identity>()); } }
+        private Identity _identity;
         public void rpcCall(int funcIndex, params object[] values)
         {
             NetworkControl.SendPackets(new P2PPackage(new NetworkControl.RPCInfo(funcIndex, values), P2PPackageType.RPC,identity), EP2PSend.k_EP2PSendReliable);

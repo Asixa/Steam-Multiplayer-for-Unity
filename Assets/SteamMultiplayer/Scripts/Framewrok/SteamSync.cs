@@ -103,10 +103,6 @@ namespace SteamMultiplayer
 
         public void Sync()
         {
-            if (identity == null)
-            {
-                identity = GetComponent<Identity>();
-            }
             if (!identity.IsLocalSpawned)return;
             
             if (mList.Count == 0 || !enabled) return;
