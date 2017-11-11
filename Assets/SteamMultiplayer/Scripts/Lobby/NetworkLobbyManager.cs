@@ -61,6 +61,8 @@ public class NetworkLobbyManager : MonoBehaviour {
 
     public CSteamID host { get { return NetworkControl.PlayerList[0]; } }
     public bool isHost { get { return NetworkControl.SelfID == host; } }
+
+    public bool CheckPlay=false;
     #endregion
 
     #region Unity Reserved Functions
@@ -82,12 +84,15 @@ public class NetworkLobbyManager : MonoBehaviour {
         Spawnable_Object_Init();
         ChatInit();
         m_LobbyInvite=Callback<GameLobbyJoinRequested_t>.Create(OnInvited);
+        NetworkControl.instance.events.JoinedLobby.AddListener(LobbyJoined);
     }
 
     void Update()
     {
         SteamAPI.RunCallbacks();
         if(lobby.m_SteamID!=0)
+
+        if(CheckPlay)
         if (SteamMatchmaking.GetLobbyData(lobby, "ready") == "1")
         {
             Play();
@@ -153,6 +158,11 @@ public class NetworkLobbyManager : MonoBehaviour {
     public void Invite()
     {
         SteamFriends.ActivateGameOverlayInviteDialog(lobby);
+    }
+
+    public void LobbyJoined()
+    {
+        CheckPlay = true;
     }
     #endregion
 
