@@ -129,6 +129,8 @@ namespace SteamMultiplayer
 
         public void UpdatePlayerList()
         {
+            if(LobbyPanel.instance==null)return;
+            
             if (LobbyPanel.instance.lobby_room.Player_List == null)
                 LobbyPanel.instance.lobby_room.Player_List = new List<PlayerListPrefab>();
                 foreach (var t in LobbyPanel.instance.lobby_room.Player_List)
