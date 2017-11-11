@@ -204,8 +204,10 @@ public class NetworkLobbyManager : MonoBehaviour {
 
     private void OnInvited(GameLobbyJoinRequested_t pCallbacks)
     {
-        if (Invitation.instance == null) return;
-        Invitation.instance.ShowInvite(pCallbacks.m_steamIDFriend,pCallbacks.m_steamIDLobby);
+        print("收到邀请"+ SteamFriends.GetFriendPersonaName(pCallbacks.m_steamIDFriend));
+        // if (Invitation.instance == null) return;
+        // Invitation.instance.ShowInvite(pCallbacks.m_steamIDFriend,pCallbacks.m_steamIDLobby);
+        JoinLobby(pCallbacks.m_steamIDLobby);
     }
     #endregion
 
