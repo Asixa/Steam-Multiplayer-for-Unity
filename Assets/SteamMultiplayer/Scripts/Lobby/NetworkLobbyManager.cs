@@ -9,7 +9,6 @@ using UnityEngine;
 using Steamworks;
 using System.Text;
 using SteamMultiplayer;
-using UnityEditor;
 using UnityEngine.Events;
 using UnityEngine.SceneManagement;
 
@@ -34,8 +33,8 @@ public class NetworkLobbyManager : MonoBehaviour {
     [Serializable]
     public struct SceneInfo
     {
-        public SceneAsset OnlineScene;
-        public SceneAsset LobbyScene;
+    //    public SceneAsset OnlineScene;
+    //    public SceneAsset LobbyScene;
     }
 
     public SceneInfo scenes;
@@ -226,7 +225,7 @@ public class NetworkLobbyManager : MonoBehaviour {
 
     public void Play()
     {
-        SceneManager.LoadScene(scenes.OnlineScene.name);
+      //  SceneManager.LoadScene(scenes.OnlineScene.name);
     }
 
 }

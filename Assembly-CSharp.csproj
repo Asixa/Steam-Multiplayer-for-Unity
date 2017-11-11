@@ -61,6 +61,7 @@
      <Compile Include="Assets\SteamMultiplayer\Scripts\Core\NetworkControl.cs" />
      <Compile Include="Assets\SteamMultiplayer\Scripts\Core\SteamNetworkBehaviour.cs" />
      <Compile Include="Assets\SteamMultiplayer\Scripts\Framewrok\SceneObject.cs" />
+     <Compile Include="Assets\SteamMultiplayer\Scripts\Framewrok\Statistics.cs" />
      <Compile Include="Assets\SteamMultiplayer\Scripts\Framewrok\SteamAnimator.cs" />
      <Compile Include="Assets\SteamMultiplayer\Scripts\Framewrok\SteamInit.cs" />
      <Compile Include="Assets\SteamMultiplayer\Scripts\Framewrok\SteamRPC.cs" />
@@ -70,6 +71,7 @@
      <Compile Include="Assets\SteamMultiplayer\Scripts\Lobby\Invitation.cs" />
      <Compile Include="Assets\SteamMultiplayer\Scripts\Lobby\NetworkLobbyManager.cs" />
      <Compile Include="Assets\SteamMultiplayer\Scripts\Lobby\UI\CreateLobbyPanel.cs" />
+     <Compile Include="Assets\SteamMultiplayer\Scripts\Lobby\UI\FlowDisplay.cs" />
      <Compile Include="Assets\SteamMultiplayer\Scripts\Lobby\UI\LobbyList.cs" />
      <Compile Include="Assets\SteamMultiplayer\Scripts\Lobby\UI\LobbyPanel.cs" />
      <Compile Include="Assets\SteamMultiplayer\Scripts\Lobby\UI\PlayerListPrefab.cs" />
