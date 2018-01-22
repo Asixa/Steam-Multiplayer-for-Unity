@@ -15,7 +15,8 @@ public class RPCInspector : Editor
 
         var components = GetComponents(rpc);
         var names = GetComponentNames(components);
-
+	    GUILayout.Space(10);
+        GUILayout.BeginVertical("Steam Multiplayer RPC", "window", GUILayout.Height(10),GUILayout.Width(50));
         EditorGUILayout.BeginVertical("box");
         for (var i = 0; i < rpc.entries.Count;)
         {
@@ -23,7 +24,7 @@ public class RPCInspector : Editor
             {
                 if (DrawTarget(rpc, i, components, names))
                 {
-                    DrawProperties(rpc, rpc.entries[i]);
+                    DrawProperties(rpc, rpc.entries[i],i);
                     ++i;
                 }
             }
@@ -39,7 +40,7 @@ public class RPCInspector : Editor
         }
         GUI.backgroundColor = Color.white;
         EditorGUILayout.EndVertical();
-
+	    GUILayout.EndVertical();
         //*******************DEBUG*******************
         //   GUILayout.Space(4f);
         //   EditorGUILayout.BeginVertical("box");
@@ -50,7 +51,7 @@ public class RPCInspector : Editor
         //foreach (var t in rpc.mList)
         //    GUILayout.Label(t.target.GetType() + " -- " + t.MethodName + "--" + (t.method == null ? "null" : t.method.Name));
         //EditorGUILayout.EndVertical();
-	    //*******************DEBUG*******************
+        //*******************DEBUG*******************
     }
 
     private static List<Component> GetComponents(SteamRPC sync)
@@ -97,22 +98,17 @@ public class RPCInspector : Editor
             break;
         }
 
-        GUI.backgroundColor = Color.red;
+
         GUI.skin.label.alignment=TextAnchor.MiddleCenter;
 
         // EditorGUILayout.HelpBox(index.ToString(), MessageType.None);
         EditorGUILayout.LabelField(index.ToString(), GUILayout.Width(20f), GUILayout.Height(14f));
-        var delete = GUILayout.Button("X", GUILayout.Width(24f), GUILayout.Height(14f));
+        
         
         GUI.backgroundColor = Color.white;
         var newIndex = EditorGUILayout.Popup(oldIndex, names);
 
-        if (delete)
-        {
-            _rpc.entries.RemoveAt(index);
-            EditorUtility.SetDirty(_rpc);
-            return false;
-        }
+
 
         if (newIndex != oldIndex)
         {
@@ -122,7 +118,7 @@ public class RPCInspector : Editor
         return true;
     }
 
-    private static void DrawProperties(SteamRPC _rpc, SteamRPC.Entry nowEntry)
+    private static void DrawProperties(SteamRPC _rpc, SteamRPC.Entry nowEntry,int index)
     {
         if (nowEntry.target == null) return;
 
@@ -133,8 +129,7 @@ public class RPCInspector : Editor
             BindingFlags.Public | BindingFlags.Instance);
 
         var oldIndex = 0;
-        var names = new List<string>();
-        names.Add("<None>");
+        var names = new List<string> {"<None>"};
         var avalible_mthods = (from t in Methods let ignore = igorne_methond.Any(t1 => t1.Name == t.Name) where !ignore select t).ToList();
 
         foreach (var t in avalible_mthods)
@@ -144,7 +139,14 @@ public class RPCInspector : Editor
         }
 
         var new_index = EditorGUILayout.Popup(oldIndex, names.ToArray());
-
+        GUI.backgroundColor = Color.red;
+        var delete = GUILayout.Button("X", GUILayout.Width(24f), GUILayout.Height(14f));
+        if (delete)
+        {
+            _rpc.entries.RemoveAt(index);
+            EditorUtility.SetDirty(_rpc);
+            return;
+        }
         if (new_index == oldIndex) return;
         nowEntry.method = (new_index == 0) ? null : avalible_mthods[new_index - 1];
         nowEntry.method_name =nowEntry.method==null?"<None>": nowEntry.method.Name;

@@ -14,6 +14,8 @@ public class SyncInspector : Editor
         var sync = target as SteamSync;
 		var components = GetComponents(sync);
 		var names = GetComponentNames(components);
+	    GUILayout.Space(10);
+	    GUILayout.BeginVertical("Steam Multiplayer Sync", "window", GUILayout.Height(10));
         EditorGUILayout.BeginVertical("box");
         for (var i = 0; i < sync.entries.Count; )
 		{
@@ -21,7 +23,7 @@ public class SyncInspector : Editor
 			{
 				if (DrawTarget(sync, i, components, names))
 				{
-					DrawProperties(sync, sync.entries[i]);
+					DrawProperties(sync, sync.entries[i], i);
 					++i;
 				}
 			}
@@ -44,7 +46,7 @@ public class SyncInspector : Editor
         sync.syn_mode = (SyncMode)EditorGUILayout.EnumPopup("Mode", sync.syn_mode);
         var updates = EditorGUILayout.IntField("Updates Per Second", sync.updatesPerSecond);
         EditorGUILayout.EndVertical();
-
+	    GUILayout.EndVertical();
         if (sync.updatesPerSecond != updates)
 		{
 			EditorUtility.SetDirty(sync);
@@ -93,17 +95,10 @@ public class SyncInspector : Editor
 		    break;
 		}
 
-		GUI.backgroundColor = Color.red;
-        var delete = GUILayout.Button("X", GUILayout.Width(24f),GUILayout.Height(14f));
+
 		GUI.backgroundColor = Color.white;
 		var new_index = EditorGUILayout.Popup(old_index, names);
 
-		if (delete)
-		{
-			sync.entries.RemoveAt(index);
-			EditorUtility.SetDirty(sync);
-			return false;
-		}
 
 		if (new_index != old_index)
 		{
@@ -115,7 +110,7 @@ public class SyncInspector : Editor
 		return true;
 	}
 
-    private static void DrawProperties (SteamSync sync, SteamSync.SavedEntry saved)
+    private static void DrawProperties (SteamSync sync, SteamSync.SavedEntry saved,int index)
 	{
 		if (saved.target == null) return;
 
@@ -142,8 +137,16 @@ public class SyncInspector : Editor
 		}
 
 		var newIndex = EditorGUILayout.Popup(old_index, names.ToArray());
+	    GUI.backgroundColor = Color.red;
+	    var delete = GUILayout.Button("X", GUILayout.Width(24f), GUILayout.Height(14f));
 
-		if (newIndex != old_index)
+	    if (delete)
+	    {
+	        sync.entries.RemoveAt(index);
+	        EditorUtility.SetDirty(sync);
+	        return;
+	    }
+        if (newIndex != old_index)
 		{
 			saved.property_name = (newIndex == 0) ? "" : names[newIndex];
 			EditorUtility.SetDirty(sync);

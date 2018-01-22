@@ -52,7 +52,7 @@ namespace SteamMultiplayer
 
         public SMCEvents events;
 
-        private static bool checking_joined;
+        private static bool checking_joined; 
         public static bool[] player_need_to_connect;
         #endregion
 

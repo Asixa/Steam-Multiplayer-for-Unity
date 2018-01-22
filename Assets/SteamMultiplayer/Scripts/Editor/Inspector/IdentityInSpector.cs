@@ -1,5 +1,6 @@
 ﻿using UnityEditor;
 using SteamMultiplayer;
+using UnityEngine;
 
 [CustomEditor(typeof(Identity))]
 public class IdentityInspector : Editor
@@ -13,7 +14,7 @@ public class IdentityInspector : Editor
         content += "   ";
         content += "SpawnID:" +identity.SpawnID;
         EditorGUILayout.BeginVertical("box");
-        EditorGUILayout.LabelField(content);
+        GUILayout.Label(content, EditorStyles.boldLabel);
         EditorGUILayout.EndVertical();
         identity.DestoryOnQuit = EditorGUILayout.Toggle("Destory On Quit", identity.DestoryOnQuit);
     }
