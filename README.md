@@ -42,3 +42,8 @@ Identity组件保存物体的ID，会在添加其他组件的时候自动添加
 
 ![Screenshot](https://github.com/Asixa/Steam-Multiplayer-for-Unity/blob/master/GitHub/Resource/Tutorial7.png?raw=true "Screenshot")
 
+## NetworkManager
+你需要将所有会生成的物体制作成Prefab，然后添加到NetworkManager的SpawnableObjects数组里，这个与UNET一样。
+NetworkManager需要有两个组件，NetworkControl和NetworkLobbyManager，NetworkLobbyManager负责大厅，NetworkControl负责游戏内逻辑，这个物体不会在场景加载的过程中删除。
+![Screenshot](https://github.com/Asixa/Steam-Multiplayer-for-Unity/blob/master/GitHub/Resource/Tutorial9.png?raw=true "Screenshot")
+
