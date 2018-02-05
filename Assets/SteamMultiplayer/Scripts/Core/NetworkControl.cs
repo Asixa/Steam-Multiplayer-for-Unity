@@ -5,11 +5,13 @@ using UnityEngine;
 using Steamworks;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.IO;
+using SteamMultiplayer.Framework;
+using SteamMultiplayer.Lobby;
 using UnityEngine.Events;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
-namespace SteamMultiplayer
+namespace SteamMultiplayer.Core
 {
 
     [Serializable]
@@ -31,7 +33,7 @@ namespace SteamMultiplayer
         static List<SNetSocket_t> m_SNetSocket = new List<SNetSocket_t>();
 
         //Steam Callbacks
-        static Callback<SocketStatusCallback_t> m_SocketStatusCallback =
+        static Callback<SocketStatusCallback_t> m_socket_status_callback =
             Callback<SocketStatusCallback_t>.Create(OnSocketStatusCallback);
 
         static Callback<P2PSessionRequest_t> m_P2PSessionRequest =
@@ -78,7 +80,7 @@ namespace SteamMultiplayer
                 UpdatePlayerList();
             }
 
-            #region 接收数据包
+            #region Recieve Data Packet
 
             uint size;
             while (SteamNetworking.IsP2PPacketAvailable(out size))
@@ -90,7 +92,6 @@ namespace SteamMultiplayer
                 var package = (P2PPackage) new BinaryFormatter().Deserialize(new MemoryStream(data));
                 //Debug.Log("从 " + SteamFriends.GetFriendPersonaName(remoteId) + " 收到包" + package.type + " ID " +
                 //          package.Object_identity);
-                Statistics.Downstream(size);
                 if (NetworkLobbyManager.instance.lobby.m_SteamID!=0)
                 Analyze(package, remoteId);
             }
@@ -102,7 +103,7 @@ namespace SteamMultiplayer
             {
                 JunkPackagetime = 1 / 8f;
                 if(NetworkLobbyManager.instance.lobby.m_SteamID!=0)
-                SendPackets(new P2PPackage(null,P2PPackageType.JunkData), EP2PSend.k_EP2PSendUnreliable, false);
+                SendPackets(new P2PPackage(null,P2PPackageType.Broadcast), EP2PSend.k_EP2PSendUnreliable, false);
             }
 
             if (checking_joined)
@@ -165,17 +166,17 @@ namespace SteamMultiplayer
                     }
                     if (instance.OnlineObjects[package.Object_identity] == null)
                     {
-                        var obj2 = Instantiate(
+                        var obj = Instantiate(
                             NetworkLobbyManager.instance.SpawnablePrefab[package.ObjectSpawnID]);
-                        obj2.TargetID = package.Object_identity;
-                        obj2.host = steamid;
-                        obj2.Init();
+                        obj.TargetID = package.Object_identity;
+                        obj.host = steamid;
+                        obj.Init();
                     }
                 }
             }
             switch (package.type)
             {
-                case P2PPackageType.位移同步:
+                case P2PPackageType.SyncTransform:
                     instance.OnlineObjects[package.Object_identity].GetComponent<SynTransform>()
                         .Receive(Lib.To_Vector3((Lib.M_Vector3) package.value));
                     break;
@@ -192,9 +193,9 @@ namespace SteamMultiplayer
                     obj.host = steamid;
                     obj.Init(); 
                     break;
-                case P2PPackageType.JunkData:
+                case P2PPackageType.Broadcast:
                     if(NetworkLobbyManager.instance.lobby.m_SteamID==0)break;
-                    Debug.Log("从 "+SteamFriends.GetFriendPersonaName(steamid)+" 收到Junkdata");
+                    //Debug.Log("从 "+SteamFriends.GetFriendPersonaName(steamid)+" 收到应答数据包");
                     if (!PlayerList.Contains(steamid))
                     {
                         PlayerList.Add(steamid);
@@ -355,7 +356,6 @@ namespace SteamMultiplayer
             {
                 if (!IncludeSelf && item == SelfID) continue;
                 Debug.Log("向 " + SteamFriends.GetFriendPersonaName(item) + " 发送数据包");
-                Statistics.Upstream((ulong)data.Length);
                 SteamNetworking.SendP2PPacket(item, data, (uint) data.Length, send);
             }
         }
@@ -478,7 +478,8 @@ namespace SteamMultiplayer
         }
         #endregion
 
-        #region 获取头像
+        // BUG NEED FIXED
+        #region GetPlayerIcon
 
         private uint width, height;
         private Texture2D downloadedAvatar;

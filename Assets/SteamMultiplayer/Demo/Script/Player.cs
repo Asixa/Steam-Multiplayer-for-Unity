@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using SteamMultiplayer;
+using SteamMultiplayer.Core;
 using UnityEngine;
 using UnityStandardAssets._2D;
 

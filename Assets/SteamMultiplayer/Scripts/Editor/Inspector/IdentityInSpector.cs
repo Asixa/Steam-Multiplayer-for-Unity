@@ -1,5 +1,6 @@
 ﻿using UnityEditor;
 using SteamMultiplayer;
+using SteamMultiplayer.Core;
 using UnityEngine;
 
 [CustomEditor(typeof(Identity))]

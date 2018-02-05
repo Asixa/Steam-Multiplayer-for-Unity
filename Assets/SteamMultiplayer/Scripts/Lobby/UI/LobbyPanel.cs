@@ -1,8 +1,9 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 using System;
-using System.Text;
 using SteamMultiplayer;
+using SteamMultiplayer.Core;
+using SteamMultiplayer.Lobby;
 using UnityEngine.UI;
 
 public class LobbyPanel : MonoBehaviour
@@ -76,7 +77,7 @@ public class LobbyPanel : MonoBehaviour
 
     public void InputEnd(string t)
     {
-        NetworkLobbyManager.instance.SendChatMessage(t);
+        NetworkLobbyManager.instance.SendChatMessage(lobby_room.input.text);
         lobby_room.input.text = "";
     }
 

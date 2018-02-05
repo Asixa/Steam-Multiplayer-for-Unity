@@ -1,13 +1,16 @@
-﻿using System;
+﻿//****************************
+// This class is used for rewrite part of  Unity 
+//****************************
+using System;
 using UnityEngine;
 
-namespace SteamMultiplayer
+namespace SteamMultiplayer.Core
 {
     public class Lib : MonoBehaviour
     {
-        #region 重写Unity数学模型
+        #region Rewrite the Unity mathematical model, make them [Serializable]
 
-        #region 重写Vector3
+        #region Vector3
 
         [Serializable]
         public struct M_Vector3
@@ -29,7 +32,7 @@ namespace SteamMultiplayer
 
         #endregion
 
-        #region 重写 Quaternion
+        #region Quaternion
 
         [Serializable]
         public struct M_Quaternion

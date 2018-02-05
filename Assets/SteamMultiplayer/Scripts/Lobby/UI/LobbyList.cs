@@ -1,4 +1,5 @@
-﻿using Steamworks;
+﻿using SteamMultiplayer.Lobby;
+using Steamworks;
 using UnityEngine;
 public class LobbyList : MonoBehaviour {
 

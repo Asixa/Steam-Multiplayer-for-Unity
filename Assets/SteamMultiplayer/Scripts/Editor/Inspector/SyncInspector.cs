@@ -5,6 +5,8 @@ using System.Reflection;
 using System.Collections.Generic;
 using System.Net;
 using SteamMultiplayer;
+using SteamMultiplayer.Core;
+using SteamMultiplayer.Framework;
 
 [CustomEditor(typeof(SteamSync))]
 public class SyncInspector : Editor

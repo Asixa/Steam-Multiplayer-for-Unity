@@ -1,4 +1,5 @@
 ﻿using SteamMultiplayer;
+using SteamMultiplayer.Core;
 using UnityEngine;
 
 public class DemoManager : MonoBehaviour

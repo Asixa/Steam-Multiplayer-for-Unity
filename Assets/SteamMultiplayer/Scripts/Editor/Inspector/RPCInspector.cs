@@ -4,6 +4,7 @@ using System.Reflection;
 using System.Collections.Generic;
 using System.Linq;
 using SteamMultiplayer;
+using SteamMultiplayer.Framework;
 
 [CustomEditor(typeof(SteamRPC))]
 public class RPCInspector : Editor
@@ -16,7 +17,7 @@ public class RPCInspector : Editor
         var components = GetComponents(rpc);
         var names = GetComponentNames(components);
 	    GUILayout.Space(10);
-        GUILayout.BeginVertical("Steam Multiplayer RPC", "window", GUILayout.Height(10),GUILayout.Width(50));
+        GUILayout.BeginVertical("Steam Multiplayer RPC", "window", GUILayout.Height(10));
         EditorGUILayout.BeginVertical("box");
         for (var i = 0; i < rpc.entries.Count;)
         {
