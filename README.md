@@ -1,4 +1,8 @@
 # Steam-Multiplayer-for-Unity
+
+[![Issues](https://img.shields.io/github/issues/Asixa/Steam-Multiplayer-for-Unity.svg?style=flat-square)](https://github.com/Asixa/Steam-Multiplayer-for-Unity/issues)  
+[![Release](https://img.shields.io/github/release/Asixa/Steam-Multiplayer-for-Unity.svg?style=flat-square)](https://github.com/Asixa/Steam-Multiplayer-for-Unity/releases/latest)
+
 恩这个是一个基于Steamwork.Net 的steam多人联机解决方案，适用于小型P2P多人游戏。
 
 如果你觉得这个项目对你有帮助，请给个 :star: XD，
