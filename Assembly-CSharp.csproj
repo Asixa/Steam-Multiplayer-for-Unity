@@ -54,7 +54,6 @@
      <Compile Include="Assets\SteamMultiplayer\Demo\Script\DemoManager.cs" />
      <Compile Include="Assets\SteamMultiplayer\Demo\Script\GameManager.cs" />
      <Compile Include="Assets\SteamMultiplayer\Demo\Script\Player.cs" />
-     <Compile Include="Assets\SteamMultiplayer\Demo\Script\PlayerMove.cs" />
      <Compile Include="Assets\SteamMultiplayer\Demo\Standard Assets\2D\Scripts\Camera2DFollow.cs" />
      <Compile Include="Assets\SteamMultiplayer\Demo\Standard Assets\2D\Scripts\CameraFollow.cs" />
      <Compile Include="Assets\SteamMultiplayer\Demo\Standard Assets\2D\Scripts\Platformer2DUserControl.cs" />
