@@ -3,52 +3,54 @@
 [![Issues](https://img.shields.io/github/issues/Asixa/Steam-Multiplayer-for-Unity.svg?style=flat-square)](https://github.com/Asixa/Steam-Multiplayer-for-Unity/issues)  
 [![Release](https://img.shields.io/github/release/Asixa/Steam-Multiplayer-for-Unity.svg?style=flat-square)](https://github.com/Asixa/Steam-Multiplayer-for-Unity/releases/latest)
 
-恩这个是一个基于Steamwork.Net 的steam多人联机解决方案，适用于小型P2P多人游戏。
+This is a Steam multiplayer online solution based on Steamwork.Net for small P2P multiplayer games.
 
-如果你觉得这个项目对你有帮助，请给个 :star: XD，
+If you think this project is helpful to you, please give :star: ,
 
-如果你想和我们一起完善这个项目，请尽情的反馈Issue或者发送Pull Request，我会邀请你加入协作者。
+If you want to work with us to improve this project, please feel free to feedback Issue or send a Pull Request, I will invite you to join the collaborators.
+
 # How To Play The Demo
-打开主场景（Main.unity）,运行，你会看到这个。
-请确保已经打开了Steam客户端，Demo场景采用测试Appid 480，这个是Steam官方的测试Appid，所以你会看到许多其他人的大厅，但是你是无法加入进去的。
+Run the main scene (Main.unity), you will see this.
+Make sure the Steam client is open. The Demo scene uses the test Appid 480. This is the official Test Appid for Steam, so you will see many other people's lobbys, but you can't join them.
+
 ![Screenshot](https://github.com/Asixa/Steam-Multiplayer-for-Unity/blob/master/GitHub/Resource/Tutorial1.png?raw=true "Screenshot")
 
-点击Create按钮即可创建大厅，在其中你可以进行简单设置
+Click the Create button to create a lobby where you can make simple settings
 ![Screenshot](https://github.com/Asixa/Steam-Multiplayer-for-Unity/blob/master/GitHub/Resource/Tutorial2.png?raw=true "Screenshot")
 
-创建完成后你会加入大厅，大厅中包含一个聊天栏，你可以点击Invite来直接邀请Steam好友加入游戏，注意，这个按钮只有在Standalone状态下才有用，Unity编辑器状态下，请打开steam客户端，右键好友头像-邀请加入游戏，来邀请。
+After the creation is complete, you will join the lobby. The lobby contains a chat bar. You can click on Invite to directly invite Steam friends to join the game. Note that this button is only useful in the Standalone state. In the Unity editor state, please open the steam client. , right click friend avatar - invite to join the game, to invite.
 
 ![Screenshot](https://github.com/Asixa/Steam-Multiplayer-for-Unity/blob/master/GitHub/Resource/Tutorial3.png?raw=true "Screenshot")
 ![Screenshot](https://github.com/Asixa/Steam-Multiplayer-for-Unity/blob/master/GitHub/Resource/Tutorial10.png?raw=true "Screenshot")
 
-然后点击Play 就可以进行游戏了
+Then click Play to play the game.
 ![Screenshot](https://github.com/Asixa/Steam-Multiplayer-for-Unity/blob/master/GitHub/Resource/Tutorial11.jpg?raw=true "Screenshot")
 
 # How To Use
-这个多人游戏框架与UNET十分类似。
+This multiplayer game framework is very similar to UNET.
 
 ## Identity组件
-Identity组件保存物体的ID，会在添加其他组件的时候自动添加
+The Identity component saves the ID of the object and automatically adds it when adding other components.
 
 ![Screenshot](https://github.com/Asixa/Steam-Multiplayer-for-Unity/blob/master/GitHub/Resource/Tutorial8.png?raw=true "Screenshot")
 
 ## Sync组件
-使用Sync组件你可以直接同步脚本的Public变量，但是目前不支持同步自定义的结构体和类，只支持基本类型和Unity的Vector3和Quaternion
+With the Sync component you can directly synchronize the script's Public variable, but currently does not support synchronizing custom structs and classes, only basic types and Unity's Vector3 and Quaternion are supported.
 
 ![Screenshot](https://github.com/Asixa/Steam-Multiplayer-for-Unity/blob/master/GitHub/Resource/Tutorial5.png?raw=true "Screenshot")
 ## RPC组件
-使用RPC组件你可以远程调用物体的函数方法，你需要先将方法添加到组件内的列表，然后调用方法ID。
+Using the RPC component you can call the function method of the object remotely. You need to add the method to the list inside the component and then call the method ID.
 
 ![Screenshot](https://github.com/Asixa/Steam-Multiplayer-for-Unity/blob/master/GitHub/Resource/Tutorial6.png?raw=true "Screenshot")
 
 ## SyncTransform组件
-使用SyncTransform组件你可以 [平滑] 地同步物体的移动，但是物体旋转需要使用Sync。
+With the SyncTransform component you can [smoothly] synchronize the movement of objects, but the object rotation requires Sync.
 
 ![Screenshot](https://github.com/Asixa/Steam-Multiplayer-for-Unity/blob/master/GitHub/Resource/Tutorial7.png?raw=true "Screenshot")
 
 ## NetworkManager
-你需要将所有会生成的物体制作成Prefab，然后添加到NetworkManager的SpawnablePrefab数组里，这个与UNET一样。
-NetworkManager需要有两个组件，NetworkControl和NetworkLobbyManager，NetworkLobbyManager负责大厅，NetworkControl负责游戏内逻辑，这个物体不会在场景加载的过程中删除。
+You need to make all the objects that will be generated into Prefab and then add them to the SpawnablePrefab array of NetworkManager, just like UNET.
+NetworkManager needs to have two components, NetworkControl and NetworkLobbyManager, NetworkLobbyManager is responsible for the lobby, NetworkControl is responsible for in-game logic, this object will not be deleted during the scene loading process.
 
 ![Screenshot](https://github.com/Asixa/Steam-Multiplayer-for-Unity/blob/master/GitHub/Resource/Tutorial9.png?raw=true "Screenshot")
 
