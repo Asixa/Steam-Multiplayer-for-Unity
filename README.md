@@ -29,21 +29,21 @@ Then click Play to play the game.
 # How To Use
 This multiplayer game framework is very similar to UNET.
 
-## Identity组件
+## Identity
 The Identity component saves the ID of the object and automatically adds it when adding other components.
 
 ![Screenshot](https://github.com/Asixa/Steam-Multiplayer-for-Unity/blob/master/GitHub/Resource/Tutorial8.png?raw=true "Screenshot")
 
-## Sync组件
+## Sync
 With the Sync component you can directly synchronize the script's Public variable, but currently does not support synchronizing custom structs and classes, only basic types and Unity's Vector3 and Quaternion are supported.
 
 ![Screenshot](https://github.com/Asixa/Steam-Multiplayer-for-Unity/blob/master/GitHub/Resource/Tutorial5.png?raw=true "Screenshot")
-## RPC组件
+## RPC
 Using the RPC component you can call the function method of the object remotely. You need to add the method to the list inside the component and then call the method ID.
 
 ![Screenshot](https://github.com/Asixa/Steam-Multiplayer-for-Unity/blob/master/GitHub/Resource/Tutorial6.png?raw=true "Screenshot")
 
-## SyncTransform组件
+## SyncTransform
 With the SyncTransform component you can [smoothly] synchronize the movement of objects, but the object rotation requires Sync.
 
 ![Screenshot](https://github.com/Asixa/Steam-Multiplayer-for-Unity/blob/master/GitHub/Resource/Tutorial7.png?raw=true "Screenshot")
