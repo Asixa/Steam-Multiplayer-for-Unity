@@ -484,31 +484,27 @@ namespace SteamMultiplayer.Core
         private uint width, height;
         private Texture2D downloadedAvatar;
 
+        //fix for your stupid avatar shit code `made by TheMaoci` - same goes to current player ...
         IEnumerator _FetchAcatar(CSteamID id, RawImage ui)
         {
-            var AvatarInt = SteamFriends.GetLargeFriendAvatar(id);
+            var AvatarInt = -1;
             while (AvatarInt == -1)
             {
-                yield return null;
+                AvatarInt = SteamFriends.GetLargeFriendAvatar(id);
             }
-            if (AvatarInt > 0)
+            SteamUtils.GetImageSize(AvatarInt, out width, out height);
+            if (width > 0 && height > 0)
             {
-                SteamUtils.GetImageSize(AvatarInt, out width, out height);
-
-                if (width > 0 && height > 0)
-                {
-                    byte[] avatarStream = new byte[4 * (int) width * (int) height];
-                    SteamUtils.GetImageRGBA(AvatarInt, avatarStream, 4 * (int) width * (int) height);
-
-                    downloadedAvatar = new Texture2D((int) width, (int) height, TextureFormat.RGBA32, false);
-                    downloadedAvatar.LoadRawTextureData(avatarStream);
-                    downloadedAvatar.Apply();
-
-                    ui.texture = downloadedAvatar;
-                }
+                byte[] avatarStream = new byte[4 * (int) width * (int) height];
+                SteamUtils.GetImageRGBA(AvatarInt, avatarStream, 4 * (int) width * (int) height);
+                downloadedAvatar = new Texture2D((int) width, (int) height, TextureFormat.RGBA32, false);
+                downloadedAvatar.LoadRawTextureData(avatarStream);
+                downloadedAvatar.Apply();
+                ui.texture = downloadedAvatar;
             }
+            yield return null;
         }
-
+        //fix end
         #endregion
 
         public void CheckJoinedLobby()
